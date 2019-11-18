@@ -18,6 +18,8 @@ from pypnusershub.db.tools import (
 from geonature.core.gn_permissions.models import VUsersPermissions, TFilters
 from geonature.utils.env import DB
 
+import jwt
+
 log = logging.getLogger(__name__)
 
 def user_from_token(token, secret_key=None):
@@ -279,3 +281,102 @@ def get_or_fetch_user_cruved(
         session[module_code] = {}
         session[module_code]['user_cruved'] = user_cruved
     return user_cruved
+
+
+#gestion du JWT
+#
+#
+#
+#
+#
+#
+
+def user_from_JWToken(token, secret_key=None): 
+    try:
+        print("NOUGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAT")
+        user = jwt.decode(token, current_app.config['SECRET_KEY'], algorithms='HS256')
+        print(user['user'])
+        return user['user']
+        
+    except InvalidTokenError:
+        print("Invalid token")
+        #raise AccessRightsExpiredError("")
+
+    except DecodeError:
+        print('Token failed verification')
+        #raise UnreadableAccessRightsError('', 403)
+    except InvalidSignatureError:
+        print('Invalid signature')
+    except ExpiredSignatureError:
+        print('Expired token')
+    except InvalidAudienceError:
+        print('Unexpected audience value')
+    except InvalidIssuerError:
+        print('iss unexpected issue')
+    except InvalidIssuedAtError:
+        print('iat claim is in the future')
+    except ImmatureSignatureError:
+        print('nbf claim is in the future')
+    except InvalidKeyError:
+        print('Key is not in the proper format')
+    except InvalidAlgorithmError:
+        print('Not recognized algorithm')
+    except MissingRequiredClaimError:
+        print('No claim contaided in the claimset')
+
+def get_user_from_JWToken_and_raise(
+    request,
+    secret_key=None,
+    redirect_on_expiration=None,
+    redirect_on_invalid_token=None
+):
+    """
+    Deserialize the token
+    catch excetpion and return appropriate Response(403, 302 ...)
+    """
+    try:
+        
+        token = request.headers.get('jwt')
+        print(token)
+        return user_from_JWToken(token, secret_key)
+
+    except AccessRightsExpiredError:
+        if redirect_on_expiration:
+            res = redirect(redirect_on_expiration, code=302)
+        else:
+            res = Response('Token Expired', 403)
+        res.set_cookie('token', expires=0)
+        return res
+    except InsufficientRightsError as e:
+        log.info(e)
+        if redirect_on_expiration:
+            res = redirect(redirect_on_expiration, code=302)
+        else:
+            res = Response('Forbidden', 403)
+        return res
+    except KeyError as e:
+        if redirect_on_expiration:
+            return redirect(redirect_on_expiration, code=302)
+        return Response('No token', 403)
+
+    except UnreadableAccessRightsError:
+        print("je suis méchant")
+        log.info('Invalid Token : BadSignature')
+        # invalid token
+        if redirect_on_invalid_token:
+            res = redirect(redirect_on_invalid_token, code=302)
+        else:
+            res = Response('Token BadSignature', 403)
+        res.set_cookie('token',  expires=0)
+        return res
+
+    except Exception as e:
+        trap_all_exceptions = current_app.config.get(
+            'TRAP_ALL_EXCEPTIONS',
+            True
+        )
+        if not trap_all_exceptions:
+            raise
+        log.critical(e)
+        msg = json.dumps({'type': 'Exception', 'msg': repr(e)})
+        return Response(msg, 403)
