@@ -2,6 +2,23 @@
 CHANGELOG
 =========
 
+2.4.1 (Unreleased)
+------------------
+
+**🚀 Nouveautés**
+
+* Intégration de profils de taxons paramétrables (#917)
+
+**⚠️ Notes de version**
+
+* De nouvelles fonctions de TaxHub sont requises pour les profils de taxons (taxonomie.check_is_cd_ref & taxonomie.find_all_taxons_parents), assurez-vous d'être à jour sur l'intégration de ces fonctions
+* SQL de création des profils de taxons à lancer (``data/core/profiles.sql``) et mettre en place des tâches cron pour rafraichir les vues matérialisées des profils.
+* SQL d'update de la BDD (``data/migrations/2.4.0to2.4.1.sql``)
+
+TODO : lancer ``data/core/profiles.sql`` lors de l'installation de geonature + Prévoir des cron pour rafraichir ces vues
+
+
+
 2.4.0 (Unreleased)
 ----------------
 

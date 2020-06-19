@@ -133,6 +133,59 @@ Données SIG
 - La fonction ``ref_geo.fct_get_altitude_intersection`` permet de renvoyer l'altitude min et max d'une observation en fournissant sa géométrie
 - Les intersections d'une observation avec les zonages sont stockées au niveau de la synthèse (``gn_synthese.cor_area_synthese``) et non au niveau de la donnée source pour alléger et simplifier leur gestion
 
+
+Profils de taxons
+"""""""""""""""""
+
+GeoNature dispose d'un mécanisme permettant de calculer des profils pour chaque taxon, en se basant sur les données présentes dans l'instance. Pour chaque taxon présent dans la synthèse, ces profils comportent :
+Dans la vue matérialisée ``gn_profiles.vm_valid_profiles``
+
+- Aire d'occurrence
+- Altitudes (min et max)
+- Nombre de données valides pour le taxon considéré
+- Dates de première et de dernière observation
+
+Dans la vue matérialisée ``gn_profiles.vm_cor_taxon_phenology``, les informations de phénologie s'appuyant sur les combinaisons entre les variables suivantes :
+
+- La période d'observation
+- La classe altitudinale
+- Le stade de vie
+
+Une tâche planifiée (cron) permet de rafraichir périodiquement ces vues matérialisées.
+
+**Usage**
+
+Pour chaque taxon (cd_ref) disposant de données dans l'instance, un profil est calculé. Il stocke l'aire d'occurrence, les limites altitudinales et les combinaisons phénologiques (période, altitude, stade de vie) jugées cohérentes.
+
+Ces profils peuvent notamment apporter une aide à la validation ou - à terme - alimenter un système d'alerte lors de la saisie en attirant l'attention sur les données qui sortent des informations (aire, phénologie...) déjà connues pour le taxon considéré au sein dans l'instance.
+
+Plusieurs fonctions permettent de "checker" si une donnée de la synthèse est cohérente au regard du profil du taxon auquel elle correspont :
+
+- gn_profiles.check_profile_distribution : permet de vérifier si la donnée à vérifier est totalement incluse dans l'aire d'occurrences valide de son taxon.
+- gn_profiles.check_profile_phenology : permet de vérifier si la combinaison d'informations phénologique d'une donnée (période de l'année, classe altitudinale et stade de vie) est une combinaison valide dans le profil du taxon
+- gn_profiles.check_profile_altitudes : permet de vérifier si l'occurence à vérifier est bien située dans la fourchette d'altitudes connue pour le taxon en question
+- gn_profiles.get_profile_score synthétise les checks précédents sous forme de score (chaque check validé compte 1 "point").
+
+**Paramétrage**
+
+Le calcul des profils de taxons repose sur un certain nombre de variables, paramétrables soit pour tout le mécanisme, soit pour des taxons donnés.
+
+*Paramètres généraux la table* ``gn_profiles.t_profiles_parameters`` :
+
+- Le paramètre id_valid_status_for_profils permet de lister les identifiants des nomenclatures des statuts de validation à prendre en compte pour les calculs des profils. Par exemple, en ne listant que les identifiants des nomenclatures "Certain -très probable" et "Probable", seules les données certaines et probables seront prises en compte lors du calcul des profils (comportement par défaut). En listant tous les identifiants des nomenclatures des statuts de validation, l'ensemble des données alimenteront les profils de taxons.
+- Pour chaque combinaison phénologique (période, classe altitudinale, stade de vie) d'un taxon, le nombre de données qui confirment la règle est stocké. Le paramètre min_occurrence_check_profil_phenology permet de définir à partir de combien d'occurences une combinaison phénologique est considérée comme fiable. L'objectif de ce paramètre est que des données exceptionnellement précoces ou tardives (ou des données imprécises) puissent être validées sans pour autant que leur phénologie devienne "une norme" admise pour le taxon.
+
+*Paramètres par taxon dans la table* ``gn_profiles.cor_taxons_profiles_parameters`` :
+Les profils peuvent être calculés selon différents paramètres en fonction des taxons. En effet, les paramètres peuvent être définis au niveau du cd_ref (quelque soit le rang : espèce, famille, règne etc), et ils s'appliqueront à tous les taxons situés "sous" ce cd_ref. Par exemple, s'il existe des paramètres pour les "Animalia" (cd_ref 183716) et des paramètres pour le renard cd_ref 60585), les paramètres du renard surcoucheront les paramètres Animalia pour cette espèces, mais les paramètres Animalia s'appliqueront à tous les autres animaux. Les règles appliquables à chaque taxon sont récupérées par la fonction ``gn_profiles.get_profiles_parameters(cdnom)``. 
+Pour chaque cd_ref, il est possible de définir :
+
+- spatial_precision : La précision spatiale utilisée pour calculer les profils. Elle est exprimée selon l'unité de mesure de la projection locale de l'instance geonature : mètres pour le Lambert93, degré pour le WGS84 etc. Elle définit à la fois la taille de la zone tampon appliquée autour de chaque observation pour définir l'aire d'occurrences du taxon, ainsi que la distance maximale admise entre le centroide et les limites d'une observation pour qu'elle soit prise en compte lors du calcul des profils (évite qu'une donnée imprécise valide à elle seule une grande zone).
+- temporal_precision_days : La précision temporelle en jours, utilisée pour calculer les profils. Elle définit à la fois le pas de temps avec lequel la phénologie est calculée, ainsi que la précision temporelle minimale requise (différence entre date début et date fin de l'observation) pour qu'une donnée soit prise en compte dans le calcul des profils. Une précision de 365jours ou plus permettra de ne pas tenir compte de la phénologie (toutes les données seront dans cette unique période de l'année).
+- active_life_stage : Définit si le stade de vie doit être pris en compte ou non lors du calcul des profils.
+
+A terme, d'autres variables pourront compléter ces profils, habitats (habref) ou comportement (nidification, reproduction, migration...) notamment.
+
+
 Fonctions
 """""""""
 
@@ -251,6 +304,46 @@ La base de données contient de nombreuses fonctions.
   RETURNS integer
   --Function to return id_nomenclature depending on observation sensitivity
   --USAGE : SELECT ref_nomenclatures.calculate_sensitivity(240,21);
+
+
+**gn_profiles**
+
+.. code:: sql
+
+  gn_profiles.get_profiles_parameters(mycdnom integer)
+  RETURNS TABLE (cd_ref integer, spatial_precision integer, temporal_precision_days integer, active_life_stage boolean,  distance smallint)
+  -- fonction permettant de récupérer les paramètres les plus adaptés (définis au plus proche du taxon) pour calculer le profil d'un taxon donné
+  -- par exemple, s'il existe des paramètres pour les "Animalia" des paramètres pour le renard, les paramètres du renard surcoucheront les paramètres Animalia pour cette espèce
+
+
+.. code:: sql
+
+  gn_profiles.check_profile_distribution(myidsynthese integer)
+  RETURNS boolean
+  --fonction permettant de vérifier la cohérence d'une donnée d'occurrence en s'assurant que sa localisation est totalement incluse dans l'aire d'occurrences valide définie par le profil du taxon en question
+
+
+.. code:: sql
+
+  gn_profiles.check_profile_phenology(myidsynthese integer)
+  RETURNS boolean
+  --fonction permettant de vérifier la cohérence d'une donnée d'occurrence en s'assurant que sa phénologie (dates, altitude, stade de vie selon les paramètres) correspond bien à la phénologie valide définie par le profil du taxon en question
+  --La fonction renvoie 'false' pour les données trop imprécises (durée d'observation supérieure à la précision temporelle définie dans les paramètres des profils).
+
+
+.. code:: sql
+
+  gn_profiles.check_profile_altitudes(myidsynthese integer)
+  RETURNS boolean
+  --fonction permettant de vérifier la cohérence d'une donnée d'occurrence en s'assurant que son altitude se trouve entièrement comprise dans la fourchette altitudinale valide du taxon en question
+
+
+.. code:: sql
+
+  gn_profiles.get_profile_score(myidsynthese integer)
+  RETURNS integer
+  --fonction permettant de calculer le "score" de la cohérence d'une donnée en cumulant le nombre de "checks" validés (parmi distribution, phénologie et altitudes)
+
 
 TODO : A compléter... A voir si on mentionne les triggers ou pas...
 
