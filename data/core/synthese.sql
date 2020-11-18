@@ -964,13 +964,6 @@ CREATE TRIGGER trg_maj_synthese_observers_txt
   FOR EACH ROW
   EXECUTE PROCEDURE gn_synthese.fct_tri_maj_observers_txt();
 
--- A RAJOUTER QUAND LA FONCTION TRIGGER SERA FONCTIONELLE
--- CREATE TRIGGER tri_refresh_vm_min_max_for_taxons
---   AFTER INSERT OR UPDATE OR DELETE
---   ON synthese
---   FOR EACH ROW
---   EXECUTE PROCEDURE fct_tri_refresh_vm_min_max_for_taxons();
-
 CREATE TRIGGER tri_insert_cor_area_synthese
   AFTER INSERT OR UPDATE OF the_geom_local
   ON gn_synthese.synthese

@@ -85,7 +85,10 @@ def get_synthese_data(info_role):
                 VSyntheseValidation.altitude_max,
                 VSyntheseValidation.unique_id_sinp,
                 VSyntheseValidation.meta_update_date,
-                VConsistancyData.score
+                VConsistancyData.score,
+                VConsistancyData.valid_distribution,
+                VConsistancyData.valid_altitude,
+                VConsistancyData.valid_phenology
             ]
         )
         .select_from(join)
@@ -122,7 +125,10 @@ def get_synthese_data(info_role):
             "cd_nom": r["cd_nom"],
             "unique_id_sinp": str(r["unique_id_sinp"]),
             "meta_update_date": str(r["meta_update_date"]),
-            "score": r["score"]
+            "score": r["score"],
+            "valid_distribution": r["valid_distribution"],
+            "valid_altitude": r["valid_altitude"],
+            "valid_phenology": r["valid_phenology"]
         }
         geojson = ast.literal_eval(r["geojson"])
         geojson["properties"] = properties

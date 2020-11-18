@@ -40,8 +40,13 @@
 }
 
 .material-icons {
-  padding-top: 3px;
+  padding-bottom: 3px;  
 }
+
+// .mat-icon {
+//   vertical-align: top;
+//   margin-top: -5px;
+// }
 
 .statusContent {
   position: absolute;
@@ -70,14 +75,14 @@
   font-size: 30px;
 }
 
-ngx-datatable {
-  // position: absolute;
-  // left:0;
-  // bottom:0;
-  // right:0;
-  // top:0;
-  // overflow:scroll;
-}
+// ngx-datatable {
+//   // position: absolute;
+//   // left:0;
+//   // bottom:0;
+//   // right:0;
+//   // top:0;
+//   // overflow:scroll;
+// }
 
 :host /deep/ .datatable-body {
   overflow-x: auto;
@@ -181,3 +186,23 @@ button:active {
     bottom: -8px;
   }
 } */
+
+.chip-alert {
+  background: red;
+}
+
+.chip-warning {
+  background: orange;
+}
+
+.chip-success {
+  background: rgba(88, 146, 1, 0.0);
+  }
+
+.mat-chip {
+  width: 70%;
+  display: inline-block;
+  text-align: center;
+  border-radius: 5px;
+  color: black;
+}

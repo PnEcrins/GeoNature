@@ -54,10 +54,10 @@
         <span *ngFor="let observers of selectedObs?.cor_observers; let i = index">
           {{ observers.email}} <span *ngIf="i != selectedObs?.cor_observers.length -1">, </span>
         </span>
-        <button> <a href="{{mailto}}"><i
-              class="fa fa-envelope-o"
-              aria-hidden="true"
-            ></i></a> </button>
+        <button> <a href="{{mailto}}"><i 
+            class="fa fa-envelope-o"
+            aria-hidden="true"
+          ></i></a> </button>
         )
       </span>
 
@@ -70,11 +70,13 @@
       </ng-template>
       <br>
       <span *ngIf="selectedObs?.altitude_min || selectedObs?.altitude_max">
-        <b> Altitude</b> : {{selectedObs?.altitude_min}} m - {{selectedObs?.altitude_max}} m
+        <b> Altitude</b> : {{selectedObs?.altitude_min}} m -
+        {{selectedObs?.altitude_max}} m
         <br>
       </span>
       <span *ngIf="selectedObs?.depth_min || selectedObs?.depth_max">
-        <b> Profondeur min </b> : {{selectedObs?.depth_min}} m - <b> Profondeur max : </b>
+        <b> Profondeur min </b> : {{selectedObs?.depth_min}} m - <b> Profondeur
+          max : </b>
         {{selectedObs?.depth_max}} m
         <br>
       </span>
@@ -239,7 +241,7 @@
       </tr>
       <tr>
         <td> Cadre d'acquisition </td>
-        <td> {{selectedObs?.acquisition_framework.acquisition_framework_name}} </td>
+        <td> {{selectedObs?.acquisition_framework.acquisition_framework_name}}</td>
       </tr>
       <tr>
         <td>
@@ -285,8 +287,8 @@
 
     <h5 class="underlined  underlined-sm main-color"> Attribut(s) Taxonomique(s) locaux </h5>
     <table class="font-xs table table-striped table-sm">
-      <tr
-        class="font-xs"
+      <tr 
+        class="font-xs" 
         *ngFor="let attr of selectObsTaxonInfo?.attributs"
       >
         <td> <b>{{attr.label_attribut}} </b> </td>
@@ -375,6 +377,9 @@
     label="Validation"
     (click)="changeMapSize()"
   >
+
+    <h3>Historique de validation de la donnée</h3>
+
     <table class="font-xs table table-striped table-sm">
       <thead>
         <tr>
@@ -389,8 +394,7 @@
         <tr *ngFor="let row of validationHistory">
           <td width="15%"> {{row.date}} </td>
           <td width="20%">
-            <span
-              class="validationCircle"
+            <span class="validationCircle"
               [ngStyle]="{'background': validationColor[row.cd_nomenclature]}"
             >
               <mat-icon
@@ -411,12 +415,12 @@
       </tbody>
     </table>
 
+    <h3>Profil du taxon </h3>
+
     <div class="row row-sm">
-      <div
-        *ngIf="APP_CONFIG.FRONTEND.DISPLAY_PROFILES"
-        class="col-5 padding-sm"
-      >
-        <h3> Profil du taxon</h3>
+      <div *ngIf="APP_CONFIG.FRONTEND.DISPLAY_PROFILES"
+        class="col-5 padding-sm">
+        <h5> Informations générales sur le taxon</h5>
 
         <table class="font-xs table table-striped table-sm">
           <tr>
@@ -430,11 +434,13 @@
 
           <tr>
             <td> Première observation valide </td>
-            <td> {{profile?.properties?.first_valid_data | date:'dd/MM/yyyy'}} </td>
+            <td> {{profile?.properties?.first_valid_data | date:'dd/MM/yyyy'}}
+            </td>
           </tr>
           <tr>
             <td> Dernière observation valide </td>
-            <td>{{profile?.properties?.last_valid_data | date:'dd/MM/yyyy'}}</td>
+            <td>{{profile?.properties?.last_valid_data | date:'dd/MM/yyyy'}}
+            </td>
           </tr>
         </table>
         <!-- <canvas
@@ -447,34 +453,46 @@
         [legend]="lineChartLegend"
         [chartType]="lineChartType"
       ></canvas> -->
-        <h3> Cohérence de la donnée </h3>
+        <h5> Cohérence de la donnée </h5>
 
         <table class="table table-sm font-xs table-striped">
           <tr>
             <td>Dans l'aire d'observation valide </td>
             <td *ngIf='profileDataChecks?.valid_distribution'>
-              <mat-icon class="success"> check </mat-icon>
+              <mat-icon
+                class="success"
+              > check </mat-icon>
             </td>
             <td *ngIf='!profileDataChecks?.valid_distribution'>
-              <mat-icon class="error"> close </mat-icon>
+              <mat-icon
+                class="error"
+              > close </mat-icon>
             </td>
           </tr>
           <tr>
             <td>Cohérence phénologique </td>
             <td *ngIf='profileDataChecks?.valid_phenology'>
-              <mat-icon class="success"> check </mat-icon>
+              <mat-icon
+                class="success"
+              > check </mat-icon>
             </td>
             <td *ngIf='!profileDataChecks?.valid_phenology'>
-              <mat-icon class="error"> close </mat-icon>
+              <mat-icon
+                class="error"
+              > close </mat-icon>
             </td>
           </tr>
           <tr>
             <td> Dans la fourchette altitudinale valide</td>
             <td *ngIf='profileDataChecks?.valid_altitude'>
-              <mat-icon class="success"> check </mat-icon>
+              <mat-icon
+                class="success"
+              > check </mat-icon>
             </td>
             <td *ngIf='!profileDataChecks?.valid_altitude'>
-              <mat-icon class="error"> close </mat-icon>
+              <mat-icon
+                class="error"
+              > close </mat-icon>
             </td>
           </tr>
           <tr>
@@ -489,11 +507,13 @@
           <pnx-geojson
             [geojson]="selectedGeom"
             [style]="{color: 'red'}"
-          ></pnx-geojson>
+          >
+          </pnx-geojson>
           <pnx-geojson
             [geojson]="profile"
             [zoomOnFirstTime]="true"
-          ></pnx-geojson>
+          >
+          </pnx-geojson>
         </pnx-map>
       </div>
     </div>

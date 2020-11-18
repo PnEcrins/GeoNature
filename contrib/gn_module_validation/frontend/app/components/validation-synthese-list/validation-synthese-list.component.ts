@@ -73,6 +73,7 @@ export class ValidationSyntheseListComponent
     this.onMapClick();
     this.onTableClick();
     this.npage = 1;
+
   }
 
   onMapClick() {

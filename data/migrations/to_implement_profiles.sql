@@ -1,3 +1,5 @@
+-- Mise en place des profils
+
 ----------
 --SCHEMA--
 ----------
@@ -467,3 +469,9 @@ CREATE INDEX index_vm_valid_profiles_cd_ref
 
 CREATE INDEX index_vm_cor_taxon_phenology_cd_ref
   ON gn_profiles.vm_cor_taxon_phenology (cd_ref);
+
+
+-- Suppression des anciennes VM et fonctions similaires
+DROP MATERIALIZED VIEW gn_synthese.vm_min_max_for_taxons; 
+DROP FUNCTION gn_synthese.fct_calculate_min_max_for_taxon; 
+DROP FUNCTION gn_synthese.fct_tri_refresh_vm_min_max_for_taxons;

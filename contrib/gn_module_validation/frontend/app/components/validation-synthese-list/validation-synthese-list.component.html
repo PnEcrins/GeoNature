@@ -95,8 +95,11 @@
   >
     <ng-template
       *ngIf="[
-            'date_min', 'date_max',
-            'meta_validation_date', 'meta_create_date', 'meta_update_date',
+            'date_min',
+            'date_max',
+            'meta_validation_date',
+            'meta_create_date',
+            'meta_update_date',
             'validation_date'
           ].includes(col.prop)"
       let-row="row"
@@ -127,11 +130,14 @@
     </ng-template>
   </ngx-datatable-column>
 
-  <ngx-datatable-column minWidth="20" *ngIf="appConfig.FRONTEND.DISPLAY_PROFILES">
-    <ng-template
-      let-column="column"
+  <ngx-datatable-column 
+    minWidth="10"
+    *ngIf="appConfig.FRONTEND.DISPLAY_PROFILES"
+  >
+    <ng-template 
+      let-column="column" 
       ngx-datatable-header-template
-    > 
+    >
     <span>Cohérence</span>
     </ng-template>
     <ng-template
@@ -139,38 +145,49 @@
       ngx-datatable-cell-template
     >
       <div [ngSwitch]="row.score">
-        <mat-icon
+        <mat-chip
           *ngSwitchCase="'0'"
-          class="error"
-          matTooltip="Aucune information de l'observation ne concorde avec le profil du taxon"
-        > close </mat-icon>
-        <mat-icon
+          class="chip-alert"
+          triggers="mouseenter:mouseleave"
+          [ngbPopover]="popContent"
+          [popoverTitle]="popTitle"
+          container="body"
+          placement="left"
+          > {{row.score}}/3 
+        </mat-chip>
+        <mat-chip
           *ngSwitchCase="'3'"
-          class="success"
-          matTooltip="Toutes les informations de l'observation concordent avec le profil du taxon"
-        > check </mat-icon>
-        <mat-icon
+          class="chip-success"
+          triggers="mouseenter:mouseleave"
+          [ngbPopover]="popContent"
+          [popoverTitle]="popTitle"
+          container="body"
+          placement="left"
+          > {{row.score}}/3 
+        </mat-chip>
+        <mat-chip
           *ngSwitchDefault
-          class="warning"
-          matTooltip="Toutes les informations de l'observation ne concordent pas avec le profil du taxon"
-        > warning </mat-icon>
+          class= "chip-warning"
+          triggers="mouseenter:mouseleave"
+          [ngbPopover]="popContent"
+          [popoverTitle]="popTitle"
+          container="body"
+          placement="left"
+          > {{row.score}}/3 
+        </mat-chip>
       </div>
 
     </ng-template>
   </ngx-datatable-column>
-
-
-
+  
 
   <ngx-datatable-footer>
     <ng-template
       ngx-datatable-footer-template
       let-rowCount="rowCount"
-      let-pageSize="pageSize"
-      let-selectedCount="selectedCount"
-      ,
-      let-curPage="curPage"
-      ,
+      let-pageSize="pageSize" 
+      let-selectedCount="selectedCount",
+      let-curPage="curPage", 
       let-offset="offset"
     >
 
@@ -206,3 +223,48 @@
   (valDate)="onValidationDateChange($event)"
 >
 </pnx-validation-popup>
+
+<ng-template #popTitle>Cohérence par rapport au profil</ng-template>
+<ng-template #popContent>
+  <table class="table table-sm font-xs table-striped">
+      <tr>
+        <td>Répartition </td>
+        <td *ngIf="row.valid_distribution">
+          <mat-icon
+            class="success"
+          > check </mat-icon>
+        </td>
+        <td *ngIf="!row.valid_distribution">
+          <mat-icon
+            class="error"
+          > close </mat-icon>
+        </td>
+      </tr>
+    <tr>
+      <td>Phénologie </td>
+      <td *ngIf="row.valid_phenology">
+        <mat-icon
+          class="success"
+        > check </mat-icon>
+      </td>
+      <td *ngIf="!row.valid_phenology">
+        <mat-icon
+          class="error"
+        > close </mat-icon>
+      </td>
+    </tr>
+    <tr>
+      <td> Altitudes</td>
+      <td *ngIf="row.valid_altitude">
+        <mat-icon
+          class="success"
+        > check </mat-icon>
+      </td>
+      <td *ngIf="!row.valid_altitude">
+        <mat-icon
+          class="error"
+        > close </mat-icon>
+      </td>
+    </tr>
+  </table>
+</ng-template>
