@@ -133,7 +133,7 @@ for D in $(find ../external_modules  -type l | xargs readlink) ; do
 done
 
 cd $myrootpath/$currentdir/
-python geonature_cmd.py install_command
+pip install --editable .
 
 echo "Update configurations"
 geonature update_configuration --build=false

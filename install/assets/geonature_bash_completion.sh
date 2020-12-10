@@ -20,7 +20,7 @@ function __geonature_commands() {
 	local readonly COMMANDS='
 		activate_gn_module deactivate_gn_module dev_back
 		dev_front frontend_build generate_frontend_config generate_frontend_modules_route
-		generate_frontend_tsconfig generate_frontend_tsconfig_app install_command
+		generate_frontend_tsconfig generate_frontend_tsconfig_app
 		install_gn_module start_gunicorn supervisor test update_configuration
 		update_module_configuration'
 

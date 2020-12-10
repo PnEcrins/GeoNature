@@ -11,7 +11,7 @@ export PGPASSWORD=$db_pass;psql -U $db_user -h test.ecrins-parcnational.net -d $
 export PGPASSWORD=$db_pass;psql -U $db_user -h test.ecrins-parcnational.net -d $db_name -c "INSERT into gn_commons.cor_module_dataset(id_module, id_dataset) SELECT gn_commons.get_id_module_bycode('OCCTAX'), t.id_dataset FROM gn_meta.t_datasets t WHERE t.active = true;"
 
 
-python ../../../geonature_cmd.py install_command
+python ../../setup.py install
 
 geonature install_gn_module $TRAVIS_BUILD_DIR/contrib/occtax occtax --build=false
 

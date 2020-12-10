@@ -90,7 +90,7 @@ fi
 source venv/bin/activate
 pip install -r requirements.txt
 
-python ../geonature_cmd.py install_command
+pip install --editable .
 
 echo "Update configurations "
 geonature update_configuration --build=false

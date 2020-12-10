@@ -138,9 +138,9 @@ then
   pip install -r requirements-dev.txt
 fi
 
+echo "Installation du backend geonature..."
+pip install --editable .  # geonature ne support pas encore autre chose que editable
 
-echo "Création des commandes 'geonature'..."
-python ${BASE_DIR}/geonature_cmd.py install_command
 echo "Création de la configuration du frontend depuis 'config/geonature_config.toml'..."
 geonature generate_frontend_config --conf-file ${BASE_DIR}/config/geonature_config.toml --build=false
 
