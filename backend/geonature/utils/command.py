@@ -14,7 +14,7 @@ import json
 from jinja2 import Template
 from pathlib import Path
 
-from server import get_app
+from geonature import create_app
 from geonature.utils.env import (
     BACKEND_DIR,
     ROOT_DIR,
@@ -42,7 +42,8 @@ def get_app_for_cmd(config_file=None, with_external_mods=True, with_flask_admin=
     """ Return the flask app object, logging error instead of raising them"""
     try:
         conf = load_config(config_file)
-        return get_app(
+        conf.update({'DEBUG': True})
+        return create_app(
             conf, with_external_mods=with_external_mods, with_flask_admin=with_flask_admin,
         )
     except ConfigError as e:

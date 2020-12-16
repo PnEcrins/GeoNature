@@ -39,7 +39,7 @@ class MyHomeView(AdminIndexView):
         return self.render("admin_home.html", admin_modules=admin_modules)
 
 
-flask_admin = Admin(
+admin = Admin(
     current_app,
     template_mode="bootstrap3",
     url="/admin",
@@ -52,7 +52,7 @@ flask_admin = Admin(
     base_template="my_master.html",
 )
 
-flask_admin.add_view(
+admin.add_view(
     BibNomenclaturesTypesAdminConfig(
         BibNomenclaturesTypesAdmin,
         DB.session,
@@ -61,7 +61,7 @@ flask_admin.add_view(
     )
 )
 
-flask_admin.add_view(
+admin.add_view(
     TNomenclaturesAdminConfig(
         TNomenclaturesAdmin, DB.session, name="Items de nomenclatures", category="Nomenclatures",
     )

@@ -3,7 +3,7 @@
 from flask import current_app
 from flask_mail import Message
 
-from server import MAIL
+from geonature.server import MAIL
 
 
 def send_mail(recipients, subject, msg_html):
@@ -19,7 +19,7 @@ def send_mail(recipients, subject, msg_html):
         **Returns:**
         .. void
     """
-    if not MAIL:
+    if not current_app.config["MAIL_CONFIG"]:
         raise Exception("No configuration for email")
 
     with MAIL.connect() as conn:
