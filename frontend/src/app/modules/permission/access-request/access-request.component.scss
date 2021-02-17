@@ -1,0 +1,26 @@
+fieldset {
+  padding: 0.35em 0.625em 0.75em !important;
+  border: 1px solid silver !important;
+  margin: 0 2px !important;
+  border-radius: 3px;
+}
+legend {
+  width: auto;
+  font-size: inherit;
+  margin: 0;
+}
+legend h4 {
+  display: inline;
+  padding: 0 0.5rem;
+  margin: 0 !important;
+}
+form.ng-invalid {
+  border-left: none !important;
+}
+.dynamic-form-separator {
+  margin: 0.75rem 0 !important;
+  visibility: hidden;
+}
+.form-text {
+  margin: 0.5rem 0;
+}

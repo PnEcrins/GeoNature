@@ -47,62 +47,56 @@ INSERT INTO utilisateurs.cor_role_app_profil VALUES
 
 -- Reset original privileges
 INSERT INTO gn_permissions.cor_role_action_filter_module_object
-    (
-    id_role,
-    id_action,
-    id_filter,
-    id_module,
-    id_object
-    )
+  (id_role, id_action, id_module, id_object, id_filter_type, value_filter)
 VALUES
     -- Groupe Admin
-    (9, 1, 4, 0, 1),
-    (9, 2, 4, 0, 1),
-    (9, 3, 4, 0, 1),
-    (9, 4, 4, 0, 1),
-    (9, 5, 4, 0, 1),
-    (9, 6, 4, 0, 1),
+    (9, 1, 0, 1, 1, 3),
+    (9, 2, 0, 1, 1, 3),
+    (9, 3, 0, 1, 1, 3),
+    (9, 4, 0, 1, 1, 3),
+    (9, 5, 0, 1, 1, 3),
+    (9, 6, 0, 1, 1, 3),
     --Validateur général sur tout GeoNature
-    (5, 4, 4, 0, 1 ),
+    (5, 4, 0, 1, 1, 3),
     --CRUVED du groupe en poste (id=7) sur tout GeoNature 
-    (7, 1, 4, 0, 1),
-    (7, 2, 3, 0, 1),
-    (7, 3, 2, 0, 1),
-    (7, 4, 1, 0, 1),
-    (7, 5, 3, 0, 1),
-    (7, 6, 2, 0, 1),
+    (7, 1, 0, 1, 1, 3),
+    (7, 2, 0, 1, 1, 2),
+    (7, 3, 0, 1, 1, 1),
+    (7, 4, 0, 1, 1, 0),
+    (7, 5, 0, 1, 1, 2),
+    (7, 6, 0, 1, 1, 1),
     -- Groupe admin a tous les droit dans METADATA
-    (9, 1, 4, 2, 1),
-    (9, 2, 4, 2, 1),
-    (9, 3, 4, 2, 1),
-    (9, 4, 4, 2, 1),
-    (9, 5, 4, 2, 1),
-    (9, 6, 4, 2, 1),
+    (9, 1, 2, 1, 1, 3),
+    (9, 2, 2, 1, 1, 3),
+    (9, 3, 2, 1, 1, 3),
+    (9, 4, 2, 1, 1, 3),
+    (9, 5, 2, 1, 1, 3),
+    (9, 6, 2, 1, 1, 3),
     -- Groupe en poste acces limité a dans METADATA
-    (7, 1, 1, 2, 1),
-    (7, 2, 3, 2, 1),
-    (7, 3, 1, 2, 1),
-    (7, 4, 1, 2, 1),
-    (7, 5, 3, 2, 1),
-    (7, 6, 1, 2, 1),
+    (7, 1, 2, 1, 1, 0),
+    (7, 2, 2, 1, 1, 2),
+    (7, 3, 2, 1, 1, 0),
+    (7, 4, 2, 1, 1, 0),
+    (7, 5, 2, 1, 1, 2),
+    (7, 6, 2, 1, 1, 0),
     -- Groupe en poste, n'a pas accès à l'admin
-    (7, 1, 1, 1, 1),
-    (7, 2, 1, 1, 1),
-    (7, 3, 1, 1, 1),
-    (7, 4, 1, 1, 1),
-    (7, 5, 1, 1, 1),
-    (7, 6, 1, 1, 1),
+    (7, 1, 1, 1, 1, 0),
+    (7, 2, 1, 1, 1, 0),
+    (7, 3, 1, 1, 1, 0),
+    (7, 4, 1, 1, 1, 0),
+    (7, 5, 1, 1, 1, 0),
+    (7, 6, 1, 1, 1, 0),
     -- Groupe admin a tous les droits sur l'admin
-    (9, 1, 4, 1, 1),
-    (9, 2, 4, 1, 1),
-    (9, 3, 4, 1, 1),
-    (9, 4, 4, 1, 1),
-    (9, 5, 4, 1, 1),
-    (9, 6, 4, 1, 1),
+    (9, 1, 1, 1, 1, 3),
+    (9, 2, 1, 1, 1, 3),
+    (9, 3, 1, 1, 1, 3),
+    (9, 4, 1, 1, 1, 3),
+    (9, 5, 1, 1, 1, 3),
+    (9, 6, 1, 1, 1, 3),
     -- partenaire peut lire sur geonature
-    (3, 2, 2, 0, 1),
+    (3, 2, 0, 1, 1, 1),
     -- test_cruved_r2 a un R de 2 sur geonature - synthese par héritage
-    (16, 2, 3, 0, 1) 
+    (16, 2, 0, 1, 1, 2) 
 ;
 
 
@@ -138,7 +132,7 @@ SELECT pg_catalog.setval('gn_meta.cor_acquisition_framework_actor_id_cafa_seq', 
 INSERT INTO gn_meta.cor_dataset_actor (id_cda, id_dataset, id_role, id_organism, id_nomenclature_actor_role) VALUES
 (1, 1, NULL, 1, ref_nomenclatures.get_id_nomenclature('ROLE_ACTEUR', '8'))
 ,(2, 1, NULL, 1, ref_nomenclatures.get_id_nomenclature('ROLE_ACTEUR', '6'))
-,(3, 1, 3, NULL, ref_nomenclatures.get_id_nomenclature('ROLE_ACTEUR', '8'))
+,(3, 3, 3, NULL, ref_nomenclatures.get_id_nomenclature('ROLE_ACTEUR', '8'))
 ,(4, 2, NULL, 1, ref_nomenclatures.get_id_nomenclature('ROLE_ACTEUR', '5'))
 ,(5, 2, NULL, 1, ref_nomenclatures.get_id_nomenclature('ROLE_ACTEUR', '8'))
 ,(7, 2, NULL, -1, ref_nomenclatures.get_id_nomenclature('ROLE_ACTEUR', '8'))
@@ -146,14 +140,15 @@ INSERT INTO gn_meta.cor_dataset_actor (id_cda, id_dataset, id_role, id_organism,
 SELECT pg_catalog.setval('gn_meta.cor_dataset_actor_id_cda_seq', (SELECT max(id_cda)+1 FROM gn_meta.cor_dataset_actor), true);
 
 INSERT INTO gn_meta.cor_dataset_territory (id_dataset, id_nomenclature_territory, territory_desc) VALUES
-(1, ref_nomenclatures.get_id_nomenclature('TERRITOIRE', 'METROP') ,'Territoire du parc national des Ecrins et de ses environs immédiats')
-,(2, ref_nomenclatures.get_id_nomenclature('TERRITOIRE', 'METROP'),'Réserve intégrale de lauvitel')
+  (1, ref_nomenclatures.get_id_nomenclature('TERRITOIRE', 'METROP'), 'Territoire du parc national des Ecrins et de ses environs immédiats'),
+  (2, ref_nomenclatures.get_id_nomenclature('TERRITOIRE', 'METROP'), 'Réserve intégrale de lauvitel')
 ;
 
-INSERT INTO gn_meta.cor_dataset_protocol (id_dataset, id_protocol) VALUES
-(1,0)
-,(2,0)
-;
+-- TODO : This query don't work... Remove ?
+-- INSERT INTO gn_meta.cor_dataset_protocol (id_dataset, id_protocol) VALUES
+--   (1,0),
+--   (2,0)
+-- ;
 SELECT pg_catalog.setval('gn_meta.sinp_datatype_protocols_id_protocol_seq', (SELECT max(id_protocol)+1 FROM gn_meta.cor_dataset_protocol), true);
 
 INSERT INTO gn_commons.cor_module_dataset (id_module, id_dataset)

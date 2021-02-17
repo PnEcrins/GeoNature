@@ -676,13 +676,11 @@ Vérification des droits des utilisateurs
   * id_role <integer:None>
   * module_code <str:None>: code du module sur lequel on veut avoir le CRUVED
   * object_code <str:'ALL'> : code de l'objet sur lequel on veut avoir le CRUVED
-  * get_id <boolean: False> : retourne l'id_filter et non le code_filter si True
 
   Valeur retournée : tuple
 
   A l'indice 0 du tuple: <dict{str:str}> ou <dict{str:int}>, boolean)
-  {'C': '1', 'R':'2', 'U': '1', 'V':'2', 'E':'3', 'D': '3'} ou
-  {'C': 2, 'R':3, 'U': 4, 'V':1, 'E':2, 'D': 2} si ``get_id=True``
+  {'C': '1', 'R':'2', 'U': '1', 'V':'2', 'E':'3', 'D': '3'}
 
   A l'indice 1 du tuple: un booléan spécifiant si le CRUVED est hérité depuis
   un module parent ou non.

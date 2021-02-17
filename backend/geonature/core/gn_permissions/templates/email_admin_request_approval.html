@@ -1,0 +1,71 @@
+<p>*** Ceci est un message généré automatiquement ***</p>
+<p>Bonjour,</p>
+<p>
+  L'utilisateur <b>{{ user.prenom_role }}  {{ user.nom_role }}</b>
+  ({{ "sans email" if not user.email else user.email }})
+  vient d'effectuer une demande de permissions d'accès
+  à "<a href="{{ app_url }}">{{ app_name }}</a>".
+</p>
+
+<h5>Permissions demandées</h5>
+<p>La demande concerne l'accès précis aux observations :</p>
+<ul>
+    <li>privés: OUI</li>
+    <li>
+        <b>sensibles</b> :
+        {{ "OUI" if sensitive_permission else "NON" }}
+    </li>
+</ul>
+<p>
+  Les permissions demandées seront
+  {% if end_date %}
+    valables jusqu’au <b>{{ end_date }}</b>.
+  {% else %}
+    <b>permanentes</b>.
+  {% endif %}
+</p>
+
+<h5>Limitation de l'accès</h5>
+<p>Cet accès sera limité aux :</p>
+<ul>
+  <li>
+    Entités géographiques :
+    {{ geographic_filter_values | join(" ; ") if geographic_filter_values | length > 0 else "Aucune" }}.
+  </li>
+  <li>
+    Groupes taxonomiques :
+    {{ taxonomic_filter_values | join(" ; ") | safe if taxonomic_filter_values | length > 0 else "Aucun" }}.
+  </li>
+</ul>
+
+{% if additional_fields | length > 0 %}
+  <h5>Informations complémentaires</h5>
+  <ul>
+    {% for item in additional_fields %}
+      <li><b>{{ item.label }} :</b> {{ item.value }}</li>
+    {% endfor %}
+  </ul>
+{% endif %}
+
+<h5>Souhaitez vous :</h5>
+<ul>
+  <li>
+    <a href="{{ approval_url }}">
+      Accepter directement cette demande, en cliquant sur ce lien.
+    </a>
+  </li>
+  <li>
+    <a href="{{ refusal_url }}">
+      Refuser directement cette demande (SANS MOTIF), en cliquant sur ce lien.
+    </a>
+  </li>
+  <li>
+    <a href="{{ app_url }}">
+      Accéder à l'interface de gestion, pour approuver ou refuser une demande
+      en indiquant un motif.
+    </a>
+  </li>
+</ul>
+
+<p>Bien cordialement,</p>
+<p>l'administrateur.</p>

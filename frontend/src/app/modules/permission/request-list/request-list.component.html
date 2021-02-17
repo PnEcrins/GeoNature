@@ -1,0 +1,33 @@
+<div class="container-fluid">
+
+  <div class="row">
+    <div class="col-xs-12 col-sm-12">
+      <gn-breadcrumbs [previousRoutes]="permissionService.getBreadcrumbsRoot()"></gn-breadcrumbs>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header d-flex align-items-center p-1">
+      <div>
+        <mat-icon class="header-icon">how_to_reg</mat-icon>
+      </div>
+      <h3>Demande de permissions d'accès</h3>
+    </div>
+
+    <nav mat-tab-nav-bar>
+      <a mat-tab-link
+        *ngFor="let link of links"
+        [routerLink]="link.path"
+        routerLinkActive #rla="routerLinkActive"
+        [active]="rla.isActive"
+      >
+        <mat-icon class="mr-2">{{ link.icon }}</mat-icon>
+        {{ link.label }}
+      </a>
+    </nav>
+
+    <div class="card-body">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>

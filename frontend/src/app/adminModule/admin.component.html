@@ -1,52 +1,102 @@
-<div class="card card-page center-in-div">
-  <div class="card-header">
-    <h3 class="underlined main-color"> Module d'administration de GeoNature </h3>
-  </div>
+<div class="container">
+  <div class="card">
+    <div class="card-header">
+      <h3>Administration de GeoNature</h3>
+    </div>
 
-
-  <div class="card-body" *ngIf="_cruvedStore.cruved?.ADMIN?.module_objects.NOMENCLATURES &&
-  adminStoreService?.moduleCruved?.module_objects?.NOMENCLATURES?.cruved?.C != '0'
-  ">
-    <h5 class="underlined second-color"> Backoffice GeoNature</h5>
-
-    <li class="no-bullet">
-      <a target="_blank" [href]="URL_NOMENCLATURE_ADMIN" class="nomenclature">
-        <button
-          mat-raised-button
-          color="primary"
-          class="uppercase"
+    <div class="card-body">
+      <div class="card-deck mb-3">
+        <div
+          class="card"
+          *ngIf="
+            _cruvedStore.cruved?.ADMIN?.module_objects.NOMENCLATURES &&
+            adminStoreService?.moduleCruved?.module_objects?.NOMENCLATURES?.cruved?.C != '0'
+          "
         >
-          Backoffice
-          <mat-icon>create</mat-icon>
+          <div class="card-header d-inline-flex align-items-center">
+            <mat-icon [inline]="true">settings</mat-icon>
+            <h5 class="second-color text-right"> Backoffice GeoNature</h5>
+          </div>
 
-        </button>
-      </a>
-    </li>
+          <div class="card-body">
+            <p class="card-text">
+              Gestion des nomenclatures utilisées par GeoNature et de leurs types.
+            </p>
+          </div>
+          <div class="card-footer d-flex justify-content-end">
+            <a
+              class="btn uppercase"
+              target="_blank"
+              [href]="URL_NOMENCLATURE_ADMIN"
+              mat-stroked-button
+              color="primary"
+            >
+              Backoffice
+              <mat-icon>arrow_forward_ios</mat-icon>
+            </a>
+          </div>
+        </div>
 
-  </div>
-
-  <div class="card-body" *ngIf="_cruvedStore.cruved?.ADMIN?.module_objects?.PERMISSIONS &&
-  adminStoreService?.moduleCruved?.module_objects?.PERMISSIONS?.cruved?.C != '0'">
-    <h5 class="underlined second-color"> Administration des permissions (CRUVED)</h5>
-
-    <li class="no-bullet">
-      <a target="_blank" [href]="URL_BACKOFFICE_PERM" class="nomenclature">
-        <button
-          mat-raised-button
-          class="uppercase"
-          color="primary"
+        <div
+          class="card"
+          *ngIf="
+            _cruvedStore.cruved?.ADMIN?.module_objects?.PERMISSIONS &&
+            adminStoreService?.moduleCruved?.module_objects?.PERMISSIONS?.cruved?.C != '0'
+          "
         >
-          Permissions
-          <mat-icon>create</mat-icon>
+          <div class="card-header d-inline-flex align-items-center">
+            <mat-icon [inline]="true">admin_panel_settings</mat-icon>
+            <h5 class="second-color text-right">Administration des permissions</h5>
+          </div>
 
-        </button>
-      </a>
-    </li>
+          <div class="card-body">
+            <p class="card-text">
+              Gestion de l'atributions des permissions (CRUVED) aux utilisateurs et groupes.
+            </p>
+          </div>
+          <div class="card-footer d-flex justify-content-end">
+            <button
+              mat-stroked-button
+              class="uppercase"
+              color="primary"
+              routerLink="/permissions/roles"
+            >
+              Permissions
+              <mat-icon>arrow_forward_ios</mat-icon>
+            </button>
+          </div>
+        </div>
 
+        <div
+          class="card"
+          *ngIf="
+            _cruvedStore.cruved?.ADMIN?.module_objects?.PERMISSIONS &&
+            adminStoreService?.moduleCruved?.module_objects?.PERMISSIONS?.cruved?.C != '0' &&
+            ENABLED_ACCESS_REQUEST
+          "
+        >
+          <div class="card-header d-inline-flex align-items-center">
+            <mat-icon [inline]="true">how_to_reg</mat-icon>
+            <h5 class="second-color text-right">Gestion des demande d'accès</h5>
+          </div>
+          <div class="card-body">
+            <p class="card-text">
+              Consultation et validations des demandes de permissions d'accès des utilisateurs.
+            </p>
+          </div>
+          <div class="card-footer d-flex justify-content-end">
+            <button
+              mat-stroked-button
+              class="uppercase"
+              color="primary"
+              routerLink="/permissions/requests"
+            >
+              Demandes
+              <mat-icon>arrow_forward_ios</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
-
-
-
 </div>
-
-

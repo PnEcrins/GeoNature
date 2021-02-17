@@ -1,0 +1,90 @@
+<div class="container">
+
+  <gn-breadcrumbs [previousRoutes]="permissionService.getBreadcrumbsRoot()"></gn-breadcrumbs>
+
+  <div class="card">
+    <div class="card-header d-flex flex-column flex-md-row align-items-center p-1"
+      [ngClass]="
+        {
+          'header-accepted': (request?.processedState == 'accepted'),
+          'header-refused': (request?.processedState == 'refused')
+        }
+      ">
+
+      <div>
+        <mat-icon *ngIf="request?.processedState == 'accepted'" class="header-icon">
+          how_to_reg
+        </mat-icon>
+        <mat-icon *ngIf="request?.processedState == 'refused'" class="header-icon">
+          block
+        </mat-icon>
+        <mat-icon *ngIf="request?.processedState == 'pending'" class="header-icon">
+          pending
+        </mat-icon>
+      </div>
+
+      <div>
+        <h3 *ngIf="request" class="h4">{{ request.userName }} ({{ request.organismName }})</h3>
+        <h4 class="h5">Détail demande de permissions</h4>
+      </div>
+
+      <div class="flex-grow-1 text-right mr-5">
+        <mat-menu #appMenu="matMenu">
+          <button
+            mat-menu-item
+            *ngIf="request?.processedState != 'accepted'"
+            (click)="openAcceptDialog(request)"
+          >
+            <mat-icon>how_to_reg</mat-icon>
+            <span>Accepter</span>
+          </button>
+          <button
+            mat-menu-item
+            *ngIf="request?.processedState != 'pending'"
+            (click)="openPendingDialog(request)"
+          >
+            <mat-icon>pending</mat-icon>
+            <span>Placer en attente</span>
+          </button>
+          <button
+            mat-menu-item
+            *ngIf="request?.processedState != 'refused'"
+            (click)="openRefusalDialog(request)"
+          >
+            <mat-icon>block</mat-icon>
+            <span>Refuser</span>
+          </button>
+        </mat-menu>
+
+        <button *ngIf="request" color="primary" mat-raised-button [matMenuTriggerFor]="appMenu">
+          <mat-icon>more_vert</mat-icon>
+          <span *ngIf="request?.processedState != 'pending'; else pendingBtnTxt">
+            Changer le statut
+          </span>
+          <ng-template #pendingBtnTxt>
+            Définir le statut
+          </ng-template>
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="request" class="card-body">
+      <gn-permission-request-display
+        [request]="request"
+        [withDynamicFormData]="true"
+      ></gn-permission-request-display>
+    </div>
+
+    <div *ngIf="!request && !errorMsg" class="card-body d-flex justify-content-center align-items-center flex-column">
+      <mat-spinner></mat-spinner>
+      <p>{{'Permissions.loading' | translate}}</p>
+    </div>
+
+    <div *ngIf="errorMsg" class="card-body d-flex justify-content-center align-items-center flex-column">
+      <div class="alert alert-danger" role="alert">
+        <h5>{{'Permissions.errors.std' | translate}}</h5>
+        <p>{{errorMsg}}</p>
+      </div>
+    </div>
+  </div>
+</div>

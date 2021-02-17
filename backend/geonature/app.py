@@ -72,10 +72,6 @@ def create_app(with_external_mods=True, with_flask_admin=True):
 
         app.register_blueprint(routes, url_prefix="/permissions")
 
-        from geonature.core.gn_permissions.backoffice.views import routes
-
-        app.register_blueprint(routes, url_prefix="/permissions_backoffice")
-
         from geonature.core.routes import routes
 
         app.register_blueprint(routes, url_prefix="")

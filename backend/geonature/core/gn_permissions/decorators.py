@@ -3,16 +3,16 @@ Decorators to protects routes with permissions
 """
 import json
 
-from flask import redirect, request, Response, current_app, g, Response
+from flask import redirect, request, Response, current_app, g
 
 from functools import wraps
 
 from pypnusershub.db.tools import InsufficientRightsError
 
 from geonature.core.gn_permissions.tools import (
-    get_user_permissions,
     get_user_from_token_and_raise,
     UserCruved,
+    PermissionsManager,
 )
 
 
@@ -29,13 +29,19 @@ def check_cruved_scope(
     The decorator first check if the user is conected and have a corect token (get_user_from_token_and_raise)
     and then return the max user SCOPE permission for the action in parameter
     The decorator manage herited CRUVED from user's group and parent module (GeoNature)
-    Return a VUsersPermissions as kwargs of the decorated function as 'info_role' parameter
+    
 
-    Parameters:
+    Parameters
+    ----------
         action(string): the requested action of the route <'C', 'R', 'U', 'V', 'E', 'D'>
         get_role(boolean): is the decorator should retour the VUsersPermissions object as kwargs
         module_code(string): the code of the module (gn_commons.t_modules) ('OCCTAX') for the requested permission
         object_code(string): the code of the object (gn_permissions.t_object) for the requested permission ('PERMISSIONS')
+    
+    Returns
+    -------
+    VUsersPermissions
+        Return a VUsersPermissions as kwargs of the decorated function as 'info_role' parameter.
     """
 
     def _check_cruved_scope(fn):
@@ -54,7 +60,7 @@ def check_cruved_scope(
                 code_filter_type="SCOPE",
                 module_code=module_code,
                 object_code=object_code,
-            ).get_herited_user_cruved_by_action(action)
+            ).get_perm_for_one_action(action)
             if user_with_highter_perm:
                 user_with_highter_perm = user_with_highter_perm[0]
 
@@ -76,3 +82,85 @@ def check_cruved_scope(
         return __check_cruved_scope
 
     return _check_cruved_scope
+
+
+def check_permissions(
+    module_code,
+    action_code,
+    object_code=None
+):
+    """Décorateur permettant de protéger les routes des web services.
+
+    Ce décorateur vérifie les permissions de l'utilisateur connecté vis à vis 
+    du filtre d'appartenance (=SCOPE) sur un module donnée, pour une action 
+    donnée et éventuellement un objet du module.
+
+    L'utilisateur doit posséder un token correct (transmis via un cookie)
+    dans le cas contraire des exceptions sont levées. Le mécanisme de gestion
+    des exceptions globales de Flask se charge de les transformer en réponse 
+    au format JSON.
+
+    Ce décorateur fournit les informations sur l'utilisateur et ses 
+    permisisons via le paramètre 'permissions' transmis à la fonction décorée.
+
+    L'héritage par les groupes et les modules est appliqué afin d'obtnir
+    les permissisons "applaties" correspondantes.
+    
+    Parameters
+    ----------
+    module_code : str
+        Le code du module (Ex. 'OCCTAX'). Voir la table gn_commons.t_modules
+        pour les valeurs possibles.
+    action_code : {'C', 'R', 'U', 'V', 'E', 'D'}
+        Le code de l'action correspondant au type de web service 
+        Voir la table gn_commons.t_actions pour les valeurs possibles.
+    object_code : str, optional
+        Le code de l'objet (~= sous-module) si nécessaire. Dans le cas
+        d'un web service ne traitant que de ce type d'objet. Voir la table 
+        gn_permissions.t_objects pour les valeurs possibles.
+    
+    Raises
+    ------
+    InsufficientRightsError
+        Exception levée si l'utilisateur n'a pas les permissions d'accès
+        nécessaires.
+
+    Returns
+    -------
+    auth: VUsersPermissions
+        Retourne les infos liées à la permission d'accès de l'utilisateur.
+
+    permissions : list<dict>
+        Liste de dictionnaires contenant les différents filtres rassemblés
+        et des infos sur chaque permission (module, action, objet...).
+
+    """
+
+    def _check_permissions(fn):
+        @wraps(fn)
+        def __check_permissions(*args, **kwargs):
+            user = get_user_from_token_and_raise(request)
+
+            perms_manager = PermissionsManager(
+                id_role=user["id_role"],
+                module_code=module_code,
+                action_code=action_code,
+                object_code=object_code
+            )
+
+            if perms_manager.check_access():
+                old_access_permission = perms_manager.get_access_permission()
+                permissions = perms_manager.get_all_permissions_with_all_filters()
+
+                # Set infos into kwargs
+                kwargs["auth"] = old_access_permission
+                kwargs["permissions"] = permissions
+                
+                # Store data globally within the current context
+                g.user = old_access_permission # Retro-compatibility
+                g.auth = old_access_permission
+                g.permissions = permissions
+
+            return fn(*args, **kwargs)
+        return __check_permissions
+    return _check_permissions

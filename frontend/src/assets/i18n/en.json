@@ -23,6 +23,10 @@
   "Columns": "Columns",
   "Cancel": "Cancel",
   "Delete": "Delete",
+  "Send": "Send",
+  "Validate": "Validate",
+  "Create": "Add",
+  "Update": "Update",
   "NotAllowed": "You do not have the rights to perform this action",
   "LoginError": "Login or password incorrect",
   "DownloadData": "Download data",
@@ -221,5 +225,106 @@
     "type": "Media Type",
     "next": "Go to previous media",
     "previous": "Go to next media"
+  },
+  "Permissions": {
+    "accessRequest": {
+      "link": "Request access to precise data",
+      "formTitle": "Request access permissions",
+      "permissionTitle": "Permissions requested",
+      "regularFormIntro": "Please indicate below the geographic areas for which you want to access the data to its maximum precision. Please also specify the taxonomic groups concerned and the timetable for your study.",
+      "sendBtnTooltip": "Send your permissions access request.",
+      "cancelBtnTooltip": "Cancel your permissions access request.",
+      "geoAreaLabel": "Geographical areas",
+      "geoAreaTooltip": "In the “Search“ zone, enter the first letters of a geographical zone. The “Tab“ key allows you to access the list of zones found. Select the item that suits you from the list offered with the directional keys and validate your selection with the “Enter” key.",
+      "taxaLabel": "Taxonomic groups",
+      "taxaTooltip": "In the ”Search” zone, enter the first letters of the name of a taxonomic group higher than the species rank. The ”Tab” key allows you to access the list of names found. Select the item that suits you from the list offered with the directional keys and validate your selection with the “Enter” key.",
+      "sensitiveAccessLabel": "Sensitive observations",
+      "sensitiveAccessText" : "I want to access sensitive observations",
+      "sensitiveAccessRules": "Please consult the rules for access to sensitive data beforehand",
+      "endDateLabel": "Access until",
+      "sending": "Your request is being sent...",
+      "responseOk": "Your request has been taken into account. It will be evaluated by an administrator.",
+      "responseError": "An error occurred while taking your request into account.",
+      "conventionTitle": "Convention",
+      "conventionCanceled": "The acceptance of the convention has just been canceled.",
+      "accepted": "Accepted",
+      "refused": "Refused",
+      "acceptOk": "Acceptance of the request taken into account",
+      "acceptKo": "An error occurred while accepting the request: {{error}}",
+      "refusalOk": "Refusal of the request taken into account",
+      "refusalKo": "An error occurred while denying the request: {{error}}",
+      "pendinglOk": "Request put on hold",
+      "pendingKo": "An error occurred while putting on hold the request: {{error}}"
+    },
+    "filters": {
+      "types": {
+        "SCOPE": "Property",
+        "GEOGRAPHIC": "Geographic",
+        "TAXONOMIC": "Taxonomic",
+        "PRECISION": "Precision"
+      },
+      "tooltips": {
+        "SCOPE": "Permission limited by the type of data membership.",
+        "GEOGRAPHIC": "Permission limited by geographic areas.",
+        "TAXONOMIC": "Permission limited by taxa.",
+        "PRECISION": "Activates (= fuzzy) or deactivates (= exact) the blurring of data (sensitive or private)."
+      },
+      "values": {
+        "SCOPE": {
+          "0": "None",
+          "1": "Mine",
+          "2": "To my organization",
+          "3": "To everybody"
+        },
+        "PRECISION": {
+          "exact": "Exact",
+          "fuzzy": "Fuzzy"
+        }
+      }
+    },
+    "deleteOk": "Deleting of the permission taken into account",
+    "deleteKo": "An error occurred while deleting the permission : {{errorMsg}}",
+    "titles": {
+      "update": "Editing a permission",
+      "add": "Adding a permission",
+      "addBaseOnInheritance": "Overloading an inherited permission"
+    },
+    "previous": "Previous",
+    "next": "Next",
+    "reset": "Reset",
+    "module": {
+      "label":"Modules",
+      "stepLabel": "Module",
+      "moduleHelp": "Choose a module."
+    },
+    "actionObject": {
+      "label": "Permissions",
+      "stepLabel": "Permission",
+      "actionObjectHelp": "Choose a permission."
+    },
+    "filter": {
+      "stepLabel": "Filters",
+      "atLeastOneFieldMsg": "At least one filter field has to be provided. The property filter is mandatory."
+    },
+    "validating": {
+      "stepLabel": "Validating",
+      "endDateLabel": "End date of permission",
+      "endDateTooltip": "Format for end date of permission: dd/mm/yyyy.",
+      "endDateHelp": "Peek a date or leave blank to make the permission permanent."
+    },
+    "addingOk": "Permission added successfully.",
+    "addingKo": "An error occured while adding the permission: {{errorMsg}}.",
+    "updatingOk": "Permission updated successfully.",
+    "updatingKo": "An error occured while updatind the permission: {{errorMsg}}.",
+    "loading": "Loading...",
+    "errors": {
+      "std": "An error occured",
+      "stdMsg": "An error occured : {{errorMsg}}"
+    }
+  },
+  "Datatable": {
+    "emptyMessage": "No data to display.",
+    "totalMessage": "total",
+    "selectedMessage": "selected"
   }
 }

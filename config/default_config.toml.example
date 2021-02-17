@@ -493,3 +493,63 @@ MAIL_ON_ERROR = false
     MAIL_CONTENT_AF_CLOSED_GREETINGS = ""
     CLOSED_MODAL_LABEL = "Dépôt d'un cadre d'acquisition"
     CLOSED_MODAL_CONTENT = L'action de dépôt est une action irréversible. Il ne sera plus possible d'ajouter des jeux de données au cadre d'acquisition par la suite. Vous ne pourrez pas supprimer votre dépôt. "
+
+[PERMISSION_MANAGEMENT]
+    # Activer (=true) l'affichage du lien vers le formulaire de demande 
+    # de permissions. Par défaut : désactivé (=false).
+    ENABLE_ACCESS_REQUEST = true
+    # Lien vers les règles d'accès aux observations sensibles/privées 
+    # propres à cette instance de GeoNature.
+    # Ce lien est ajouté au formulaire de demande d'accès.
+    DATA_ACCESS_RULES_LINK = "https://inpn.mnhn.fr/docs/demandes_sinp/Licence_ferme_SINP.pdf"
+    # Liste d'id (table `ref_geo.bib_areas_type`, champ `id_type`) des 
+    # types de zones géographique sélectionnables dans le filtre par 
+    # zones géographiques du formulaire de demande d'accès.
+    # Par défaut : Communes (=25) et Départements (=26).
+    AREA_TYPES = [25, 26]
+    # Durée par défaut en jour pendant laquelle l'accès est autorisé.
+    # Le champ "Accès jusqu'au" sera automatiquement rempli avec une date
+    # correspondant à nombre de jour dans le futur.
+    # Par défaut, ce champ n'apparait pas et l'accès est permanent.
+    DEFAULT_ACCESS_DURATION = 90
+    # Durée maximum en jour pendant laquelle l'accès peut être autorisé.
+    # La date saisie dans le champ "Accès jusqu'au"devra se situé entre 
+    # le jour courrant et ce nombre de jours dans le futur.
+    # Par défaut, la demande d'accès maximum est de 1 ans.
+    MAX_ACCESS_DURATION = 365
+    # Email du validateur des permissions d'accès.
+    # Possibilité d'indiquer plusieurs emails en les séparant par des virgules.
+    VALIDATOR_EMAIL = "Carl LINNAEUS <c.linnaeus@linnaeus.se>"
+
+    # Activer la validation de la convention suite à une demande d'accès.
+    # Par défaut: désactivé (=false).
+    ENABLE_CONVENTION = true
+    # Titre de la fenêtre modale affichant la convention.
+    # Par défaut: "Convention".
+    CONVENTION_TITLE = "Convention « Droit d'accès ponctuel aux données géoconfidentielles »"
+    # Libellé du bouton permettant d'accepter la convention.
+    # Par défaut: "Valider".
+    CONVENTION_VALIDATE = "J'accepte les termes de la convention « droit d'accès »."
+
+    # Titre de la section personnalisable du formulaire de demande d'accès
+    REQUEST_FORM_TITLE = "Motivations de la demande"
+    # Définition de la section personnalisable du formulaire de demande 
+    # de permission d'accès.
+    # Si PERMISSION_MANAGEMENT.REQUEST_FORM ne contient rien la partie 
+    # personnalisable du formulaire ne s'affiche pas.
+    [[PERMISSION_MANAGEMENT.REQUEST_FORM]]
+        type_widget = "html"
+        attribut_name = "motivation-intro"
+        html = """
+            <small class="form-text">
+                Veuillez décrire ci-dessous les motivations à l'origine 
+                de votre demande.
+            </small>"""
+   [[PERMISSION_MANAGEMENT.REQUEST_FORM]]
+        type_widget = "textarea"
+        attribut_label = "Description"
+        attribut_name = "project-description"
+        required = false
+        help = """Préciser le calendrier, la finalité, l'objet de l’étude 
+            scientifique et le cadre réglementaire dans lequel s’inscrit 
+            la demande."""

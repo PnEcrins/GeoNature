@@ -1,0 +1,128 @@
+<div class="container-fluid" [ngClass]="{ 'dense-display': dense }">
+  <div class="row">
+    <mat-card class="col">
+      <mat-card-header>
+        <mat-icon class="text-muted" mat-card-avatar>account_box</mat-icon>
+        <mat-card-subtitle>Demandeur</mat-card-subtitle>
+        <mat-card-title>
+          {{ request.userName }}
+          <ul *ngIf="!dense" class="list-unstyled ml-3">
+            <li>
+              <small>
+                <mat-icon inline class="user-detail" matTooltip="Organisme de l'utilisateur">
+                  business
+                </mat-icon>: {{ request.organismName }}
+              </small>
+            </li>
+            <li>
+              <small>
+                <mat-icon inline class="user-detail" matTooltip="Email de l'utilisateur">
+                  email
+                </mat-icon>:
+                <ng-container *ngIf="request.userEmail != '?'; else userWithoutEmail">
+                  {{ request.userEmail }}
+                </ng-container>
+                <ng-template #userWithoutEmail>
+                  <span class="rounded-pill text-dark bg-warning d-inline-block p-1">
+                    Utilisateur sans email !
+                  </span>
+                </ng-template>
+              </small>
+            </li>
+          </ul>
+        </mat-card-title>
+      </mat-card-header>
+    </mat-card>
+  </div>
+
+  <div class="row">
+    <mat-card class="col-md">
+      <mat-card-header>
+        <mat-icon mat-card-avatar>book_online</mat-icon>
+        <mat-card-subtitle>Date de fin d'accès</mat-card-subtitle>
+        <mat-card-title>{{ request.endAccessDate | date:dateFormat:undefined:locale }}</mat-card-title>
+      </mat-card-header>
+    </mat-card>
+
+    <mat-card class="col-md">
+      <mat-card-header>
+        <mat-icon [ngClass]="{ 'text-danger': request.sensitiveAccess }" mat-card-avatar>
+          local_police
+        </mat-icon>
+        <mat-card-subtitle>Données sensibles</mat-card-subtitle>
+        <mat-card-title [ngClass]="{ 'text-danger': request.sensitiveAccess }">
+          {{ request.sensitiveAccess ? 'OUI' : 'NON' }}
+        </mat-card-title>
+      </mat-card-header>
+    </mat-card>
+  </div>
+
+  <div class="row">
+    <mat-expansion-panel class="col-md large-panel-body" [expanded]="!dense">
+      <mat-expansion-panel-header class="d-flex flex-row">
+        <mat-icon class="flex-shrink">map</mat-icon>
+        <div class="header-group">
+          <mat-panel-title>Zones géographiques</mat-panel-title>
+          <mat-panel-description>x {{request.geographicFiltersLabels?.length}}</mat-panel-description>
+        </div>
+      </mat-expansion-panel-header>
+
+      <ul class="list-style">
+        <li *ngFor="let area of request.geographicFiltersLabels">{{ area }}</li>
+      </ul>
+    </mat-expansion-panel>
+
+    <mat-expansion-panel class="col-md large-panel-body" [expanded]="!dense">
+      <mat-expansion-panel-header class="d-flex flex-row">
+        <mat-icon class="flex-shrink">emoji_nature</mat-icon>
+        <div class="header-group">
+          <mat-panel-title>Groupes taxonomiques</mat-panel-title>
+          <mat-panel-description>x {{request.taxonomicFiltersLabels?.length}}</mat-panel-description>
+        </div>
+      </mat-expansion-panel-header>
+
+      <ul class="list-style">
+        <li *ngFor="let taxon of request.taxonomicFiltersLabels" [innerHtml]="taxon | safeHTML"></li>
+      </ul>
+    </mat-expansion-panel>
+  </div>
+
+  <div class="row" *ngIf="request.refusalReason && !dense">
+    <mat-expansion-panel class="col" [expanded]="true">
+      <mat-expansion-panel-header class="d-flex flex-row">
+        <mat-icon class="flex-shrink">block</mat-icon>
+        <div class="header-group">
+          <mat-panel-title>Motif du refus</mat-panel-title>
+          <mat-panel-description class="truncate">{{ request.refusalReason }}</mat-panel-description>
+        </div>
+      </mat-expansion-panel-header>
+
+      <p> {{ request.refusalReason }} </p>
+    </mat-expansion-panel>
+  </div>
+
+  <div *ngIf="request.additionalData && !dense">
+    <div class="row" *ngFor="let field of request.additionalData">
+      <mat-expansion-panel class="col" [expanded]="true">
+        <mat-expansion-panel-header class="d-flex flex-row">
+          <mat-icon
+            *ngIf="field.icon && field.iconSet"
+            class="flex-shrink"
+            [fontSet]="field.iconSet"
+            [fontIcon]="field.icon"
+            >
+          </mat-icon>
+          <mat-icon *ngIf="field.icon && !field.iconSet" class="flex-shrink">
+            {{ field.icon }}
+          </mat-icon>
+          <div class="header-group">
+            <mat-panel-title>{{ field.label }}</mat-panel-title>
+            <mat-panel-description class="truncate">{{ field.value }}</mat-panel-description>
+          </div>
+        </mat-expansion-panel-header>
+
+        <p> {{ field.value }} </p>
+      </mat-expansion-panel>
+    </div>
+  </div>
+</div>

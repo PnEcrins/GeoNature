@@ -1,0 +1,63 @@
+<h1 mat-dialog-title>
+  <mat-icon inline="true">delete</mat-icon>
+  Confirmez vous supprimer la permission suivante ?
+</h1>
+
+<div mat-dialog-content>
+  <h2 class="h5">Infos</h2>
+  <dl class="row ml-3">
+    <dt class="col-sm-5 col-md-3 text-sm-right text-md-right">Module :</dt>
+    <dd class="col-sm-7 col-md-9">{{ permission.module }}</dd>
+
+    <dt class="col-sm-5 col-md-3 text-sm-right text-md-right">Permission :</dt>
+    <dd class="col-sm-7 col-md-9">{{ permission.name }}</dd>
+
+    <dt class="col-sm-5 col-md-3 text-sm-right text-md-right">Date de fin :</dt>
+    <dd class="col-sm-7 col-md-9">
+      <ng-container *ngIf="permission.endDate ; else permanent">
+        {{ permission.endDate | date:'mediumDate':null:locale }}
+      </ng-container>
+      <ng-template #permanent>Aucune</ng-template>
+    </dd>
+  </dl>
+
+  <ng-container *ngIf="permission.filters">
+    <h2 class="h5">Filtres</h2>
+    <dl class="row ml-3">
+      <ng-container *ngFor="let filter of permission.filters">
+        <dt class="col-sm-5 col-md-3 text-sm-right text-md-right">
+          {{ "Permissions.filters.types." + filter.type | translate }} :
+        </dt>
+        <dd *ngIf="!filter.label" class="col-sm-7 col-md-9">
+          {{
+            "Permissions.filters.values." + filter.type + "." + filter.value
+            | translate
+          }}
+        </dd>
+        <dd *ngIf="filter.label" class="col-sm-7 col-md-9">
+          <mat-chip-list>
+            <mat-chip *ngFor="let label of filter.label">
+              <span [innerHtml]="label | safeHTML"></span>
+            </mat-chip>
+          </mat-chip-list>
+        </dd>
+      </ng-container>
+    </dl>
+  </ng-container>
+</div>
+
+<div mat-dialog-actions class="d-flex justify-content-between">
+  <button mat-button class="mat-elevation-z2" color="secondary" mat-dialog-close>
+    <mat-icon>cancel</mat-icon>
+    Annuler
+  </button>
+  <button
+    mat-button
+    class="mat-elevation-z2"
+    color="primary"
+    [mat-dialog-close]="permission"
+  >
+    <mat-icon>check_circle</mat-icon>
+    Oui
+  </button>
+</div>

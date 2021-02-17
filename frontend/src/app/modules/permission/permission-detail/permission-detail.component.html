@@ -1,0 +1,319 @@
+<div class="container-fluid">
+
+  <gn-breadcrumbs [previousRoutes]="permissionService.getBreadcrumbsRoot()"></gn-breadcrumbs>
+
+  <div class="card">
+    <div class="card-header d-flex align-items-center p-1">
+      <div [ngSwitch]="role?.type">
+        <mat-icon *ngSwitchCase="'GROUP'" class="header-icon" fontSet="fa" fontIcon="fa-group"></mat-icon>
+        <mat-icon *ngSwitchDefault class="header-icon">account_circle</mat-icon>
+      </div>
+      <div>
+        <h3 class="h4">{{ role?.userName || '&nbsp;' }}</h3>
+        <h4 class="h5">Permissions relatives aux modules</h4>
+      </div>
+      <div class="flex-grow-1 text-right">
+        <mat-slide-toggle
+          class="mr-3"
+          [color]="color"
+          [checked]="showInheritance"
+          (change)="onShowInheritanceChange($event)"
+          matTooltip="Afficher/Cacher les permissions héritées."
+        >
+          Héritage
+        </mat-slide-toggle>
+
+        <button
+          class="mat-elevation-z2 mx-1"
+          mat-raised-button
+          color="primary"
+          matRipple
+          (click)="openEditModal()"
+        >
+          <mat-icon>add_circle</mat-icon>
+          Ajouter une permission
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="role && !loading; else loadingTpl" class="card-body">
+      <mat-expansion-panel class="bg-info mb-3">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            <h5> <mat-icon inline>help</mat-icon> Héritage des permissions </h5>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <p class="mb-1">
+          GeoNature possède un mécanisme d'héritage des permissions via les groupes d'utilisateurs
+          et/ou les modules dont voici les principales caractèristiques :
+        </p>
+        <ul class="mb-0">
+          <li>Les membres d'un groupe héritent des permissions de son ou ses groupes d'appartenance.</li>
+          <li>Le module GEONATURE est le module principal par défaut dont tous les autres héritent.</li>
+          <li>Si un module est associé à des objets spécifiques ceux-ci héritent des permissions de leur module.</li>
+        </ul>
+      </mat-expansion-panel>
+
+      <div *ngIf="role?.groups && role?.groups.length > 0" class="alert alert-primary mb-3 py-1">
+        <p class="mb-0">
+          L'utilisateur <b> {{ role?.userName}} </b> appartient aux groupe(s) suivant(s) :
+        </p>
+        <ul class="list-inline mb-0">
+          <li *ngFor="let group of role?.groups" class="list-inline-item">
+            <a
+              mat-stroked-button
+              matRipple
+              matTooltip="Accéder aux permissions de ce groupe."
+              [routerLink]="['/permissions/roles/', group.id]"
+            >
+              {{ group.groupName }}
+              <mat-icon inline fontSet="fa" fontIcon="fa-eye"></mat-icon>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <mat-accordion *ngIf="modules?.length ; else noPermissionTpl">
+        <mat-expansion-panel
+          *ngFor="let module of modules; trackBy: trackByModuleCode"
+        >
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              <span class="mr-2">
+                <mat-icon *ngIf="!module.picto" inline="true">extension</mat-icon>
+                <mat-icon
+                  *ngIf="module.picto && module.picto.startsWith('fa-')"
+                  inline="true"
+                  fontSet="fa"
+                  [fontIcon]="module.picto"
+                ></mat-icon>
+                <mat-icon
+                  *ngIf="module.picto && !module.picto.startsWith('fa-')"
+                  inline="true"
+                >
+                  {{ module.picto }}
+                </mat-icon>
+              </span>
+
+              <h5>
+                {{module.label}}
+              </h5>
+            </mat-panel-title>
+            <mat-panel-description>
+              <p *ngIf="permissionsNbrByCode[module.code] as nbr">
+                <strong>{{ nbr.total }}</strong>
+                {{ nbr.total < 2 ? 'permission' : 'permissions' }}
+                dans le module {{ module.label }}
+                <ng-container *ngIf="showInheritance">
+                  (
+                  <ng-container *ngIf="showInheritance && nbr.owned > 0">
+                    {{ nbr.owned }} {{ nbr.owned < 2 ? 'possédée' : 'possédées'}}
+                  </ng-container>
+                  <ng-container *ngIf="nbr.owned > 0 && nbr.inherited > 0">, </ng-container>
+                  <ng-container *ngIf="showInheritance && nbr.inherited > 0">
+                    {{ nbr.inherited }} {{nbr.inherited < 2 ? 'héritée' : 'héritées'}}
+                  </ng-container>
+                  )
+                </ng-container>
+              </p>
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+
+          <p *ngIf="module.code == 'GEONATURE'" class="alert alert-info d-flex align-items-center p-1 mt-3">
+            <mat-icon class="m-2">help</mat-icon>
+            <span>
+              GeoNature est le module <i>virtuel</i> par défaut dont tous les autres héritent.<br/>
+              Il représente l'application dans son ensemble.
+            </span>
+          </p>
+
+          <div class="table-responsive-md">
+            <table class="table table-bordered table-hover mt-2">
+              <thead class="thead-dark">
+                <tr>
+                  <th
+                    rowspan="2"
+                    matTooltip="Nom de la permission (Action CRUVED + objet)"
+                    scope="col"
+                  >
+                    Nom
+                    <mat-icon class="icon-help">help_outline</mat-icon>
+                  </th>
+                  <th
+                    rowspan="2"
+                    matTooltip="Liste des filtres s'appliquant à cette permission."
+                    scope="col"
+                  >
+                    Filtre(s)
+                    <mat-icon class="icon-help">help_outline</mat-icon>
+                  </th>
+                  <th
+                    rowspan="2"
+                    matTooltip="Si la permission n'est pas permanente, indique la date de fin de validité de la permission."
+                    class="text-center"
+                    scope="col"
+                  >
+                    Date de fin
+                    <mat-icon class="icon-help">help_outline</mat-icon>
+                  </th>
+                  <th colspan="2" class="text-center">Héritage</th>
+                  <th rowspan="2" class="text-right" scope="col">
+                    Actions
+                  </th>
+                </tr>
+                <tr>
+                  <th
+                    class="text-center"
+                    scope="col"
+                    matTooltip="
+                      Nom du module par lequel l'utilisateur hérite de la permission.
+                      « Parent » indique pour un objet un héritage de la permission par son propre module.
+                    "
+                  >
+                    module
+                    <mat-icon class="icon-help">help_outline</mat-icon>
+                  </th>
+                  <th
+                    class="text-center"
+                    scope="col"
+                    matTooltip="Nom du groupe via lequel l'utilisateur hérite de la permission."
+                  >
+                    groupe
+                    <mat-icon class="icon-help">help_outline</mat-icon>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <ng-container *ngFor="let objectCode of objectsOrder[module.code]">
+                  <ng-container *ngIf="objectCode != 'ALL'">
+                    <tr class="spacer"></tr>
+                    <tr  class="table-secondary object-row">
+                      <th colspan="6" class="text-uppercase">{{ objects[objectCode].description }}</th>
+                    </tr>
+                  </ng-container>
+                  <tr
+                    *ngFor="let permission of permissionsByCode[module.code][objectCode]"
+                    [class.object-row]="objectCode != 'ALL'"
+                  >
+                    <th class="align-middle" scope="row">
+                      {{ permission.name }}
+                    </th>
+                    <td class="align-middle">
+                      <table class="table table-borderless table-sm mb-0">
+                        <tr *ngFor="let filter of permission.filters">
+                          <th class="p-1 text-right" style="width: 110px;" scope="row">
+                            {{ "Permissions.filters.types." + filter.type | translate }} :
+                          </th>
+                          <td *ngIf="!filter.label" class="p-1 text-left ">
+                            {{
+                              "Permissions.filters.values." + filter.type + "." + filter.value
+                              | translate
+                            }}
+                          </td>
+                          <td *ngIf="filter.label" class="p-1 text-left ">
+                            <mat-chip-list>
+                              <mat-chip *ngFor="let label of filter.label">
+                                <span [innerHtml]="label | safeHTML"></span>
+                              </mat-chip>
+                            </mat-chip-list>
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                    <td
+                      class="align-middle text-center"
+                      [matTooltip]="!permission.endDate ? 'La permission est permanente' : null"
+                    >
+                      <ng-container *ngIf="permission.endDate ; else permanent">
+                        {{ permission.endDate | date:'shortDate':null:locale }}
+                      </ng-container>
+                      <ng-template #permanent>Aucune</ng-template>
+                    </td>
+                    <td class="align-middle text-center">
+                      <ng-container
+                        *ngIf="
+                          permission.isInherited
+                          && permission.inheritedBy
+                          && permission.inheritedBy.byModule ;
+                          else notInheritedByModule
+                        ">
+                        {{ permission.inheritedBy.moduleCode }}
+                      </ng-container>
+                      <ng-template #notInheritedByModule>&nbsp;</ng-template>
+                    </td>
+                    <td class="align-middle text-center">
+                      <ng-container
+                        *ngIf="
+                          permission.isInherited
+                          && permission.inheritedBy
+                          && permission.inheritedBy.byGroup ;
+                          else notInheritedByGroup
+                        ">
+                        {{ permission.inheritedBy.groupName }}
+                      </ng-container>
+                      <ng-template #notInheritedByGroup>&nbsp;</ng-template>
+                    </td>
+                    <td class="align-middle">
+                      <div class="d-flex justify-content-end flex-wrap">
+                        <button
+                          class="mat-elevation-z1 mx-1"
+                          mat-icon-button
+                          color="primary"
+                          matRipple
+                          [matTooltip]="
+                            permission.isInherited
+                              ? 'Créer une nouvelle permission basée sur cette permission héritée.'
+                              : 'Éditer la permission.'
+                            "
+                          (click)="openEditModal(permission)"
+                        >
+                          <mat-icon>
+                            {{ permission.isInherited ? 'add_circle' : 'create' }}
+                          </mat-icon>
+                        </button>
+                        <button
+                          *ngIf="!permission.isInherited"
+                          class="mat-elevation-z1 mx-1"
+                          mat-icon-button
+                          color="warn"
+                          matRipple
+                          matTooltip="Supprimer la permission."
+                          (click)="openDeleteDialog(permission)"
+                        >
+                          <mat-icon>delete</mat-icon>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                </ng-container>
+              </tbody>
+            </table>
+          </div>
+        </mat-expansion-panel>
+      </mat-accordion>
+    </div>
+  </div>
+</div>
+
+<!-- Templates -->
+<ng-template #loadingTpl>
+  <div class="card-body d-flex justify-content-center align-items-center flex-column">
+    <mat-spinner></mat-spinner>
+    <p>Chargement en cours...</p>
+  </div>
+</ng-template>
+<ng-template #noPermissionTpl>
+  <div class="
+    card-body
+    d-flex justify-content-center align-items-center flex-column
+  ">
+    <div class="
+      d-flex flex-row
+      border border-light rounded p-3
+      bg-info text-white
+    ">
+      <mat-icon class="mr-3">info</mat-icon>
+      <p class="m-0">Aucune permission trouvé...</p>
+    </div>
+  </div>
+</ng-template>

@@ -1,0 +1,49 @@
+<p>*** Ceci est un message généré automatiquement ***</p>
+<p>Bonjour {{ user.prenom_role }}  {{ user.nom_role }},</p>
+
+<p>
+    Votre demande de permissions d'accès à "<a href="{{ app_url}}">{{ app_name }}</a>" vient d'être acceptée.<br/>
+    Adresse du site : {{ app_url}}<br/>
+    Votre identifiant de connexion : {{ user.identifiant }}<br/>
+    Vos permissions sont
+    {% if end_date %}
+        valables jusqu’au <b>{{ end_date }}</b>.
+    {% else %}
+        <b>permanentes</b>.
+    {% endif %}
+</p>
+
+<h5>Rappel de votre demande</h5>
+<p>Vous avez demandé l'accès précis aux observations :</p>
+<ul>
+    <li>privés: OUI</li>
+    <li>
+        <b>sensibles</b> :
+        {{ "OUI" if sensitive_permission else "NON" }}
+    </li>
+</ul>
+<p>Votre accès est limité aux :</p>
+<ul>
+    <li>
+        entités géographiques :
+        {{ geographic_filter_values | join(" ; ") if geographic_filter_values | length > 0 else "Aucune" }}.
+    </li>
+    <li>
+        groupes taxonomiques :
+        {{ taxonomic_filter_values | join(" ; ") | safe if taxonomic_filter_values | length > 0 else "Aucun" }}.
+    </li>
+</ul>
+
+{% if sensitive_permission %}
+<h5>Données sensibles</h5>
+<p>
+    Votre demande de données concerne des données sensibles, données visées à l'article L. 124-4 §8 du
+    code de l'environnement, dont la consultation ou la communication peut porter atteinte à la
+    protection de l'environnement. Par conséquent, elles sont floutées géographiquement lors de leur
+    diffusion.
+</p>
+{% endif %}
+
+<p>Pour plus d'information n'hésitez pas à nous contacter : {{ validators }}.</p>
+<p>Bien cordialement,</p>
+<p>l'administrateur.</p>

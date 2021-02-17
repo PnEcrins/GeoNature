@@ -1,5 +1,4 @@
 <mat-sidenav-container class="sidenav-container">
-
   <mat-sidenav
     id="app-sidenav"
     #sidenav
@@ -8,7 +7,6 @@
   >
     <pnx-sidenav-items></pnx-sidenav-items>
   </mat-sidenav>
-
 
   <mat-sidenav-content>
     <mat-toolbar
@@ -34,9 +32,7 @@
       >
 
       <span class="toolbar-spacer"></span>
-      <div>
 
-      </div>
       <span id="appName">
         <h3> {{ appConfig.appName }} </h3>
       </span>
@@ -68,6 +64,16 @@
             routerLink="/user"
           >
             {{ 'MyAccount' | translate }}
+          </a>
+
+          <a
+            mat-menu-item
+            *ngIf="appConfig.PERMISSION_MANAGEMENT.ENABLE_ACCESS_REQUEST"
+            matTooltip="Accéder au formulaire de demande de permissions d'accès"
+            matTooltipPosition="before"
+            routerLink="/permissions/requests/add"
+          >
+            {{ 'Permissions.accessRequest.link' | translate }}
           </a>
         </mat-menu>
       </ng-container>
@@ -146,8 +152,6 @@
       <div>
         <router-outlet></router-outlet>
       </div>
-
     </div>
   </mat-sidenav-content>
-
 </mat-sidenav-container>

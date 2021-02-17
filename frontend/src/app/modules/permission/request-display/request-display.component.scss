@@ -1,0 +1,72 @@
+// Mat-Card
+mat-card, mat-expansion-panel {
+  padding: .3rem;
+  margin: .3rem;
+}
+mat-card-header mat-icon {
+  font-size: 3rem;
+  color: rgba(0,0,0,.54);
+}
+mat-card-header mat-icon.user-detail {
+  font-size: 20px;
+  vertical-align: middle;
+}
+mat-card mat-card-title {
+  margin-bottom: 8px;
+}
+
+// Mat-Expansion-Panel
+mat-expansion-panel mat-expansion-panel-header {
+  padding: .5rem .6rem 0 0;
+}
+mat-expansion-panel.mat-expanded mat-expansion-panel-header {
+  padding: 0 .6rem 0 0;
+}
+::ng-deep mat-expansion-panel-header {
+  box-sizing: content-box;
+}
+mat-expansion-panel mat-icon {
+  color: rgba(0,0,0,.54);
+  font-size: 3rem;
+  height: 45px;
+  width: 45px;
+}
+mat-expansion-panel .header-group {
+  margin: 0 16px 0 8px;
+  width: 100%;
+}
+mat-expansion-panel.mat-expanded .header-group {
+  margin: 0 16px 0 8px;
+}
+mat-expansion-panel .header-group mat-panel-title {
+  color: rgba(0,0,0,.54);
+  font-size: 14px;
+  margin: 0 0 6px 0;
+}
+mat-expansion-panel .header-group mat-panel-description {
+  color: rgba(0,0,0,1);
+  font-size: 18px;
+  margin: 0 0 10px 0;
+}
+::ng-deep mat-expansion-panel.large-panel-body .mat-expansion-panel-body {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+// Truncate Text
+.truncate {
+  display: inline-block;
+  width: 90%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.mat-expanded .truncate {
+  display: none;
+}
+
+// Mat-Icon Fontawesome
+mat-icon.fa {
+  font-size: 2.8rem !important;
+  padding-left: .4rem;
+}

@@ -1,0 +1,55 @@
+@function color($color-name) {
+  @return var(--#{$color-name});
+}
+
+/* Header */
+.header-icon {
+  display: block;
+  font-size: 3rem;
+  width: 3rem;
+  height: 3rem;
+  margin-right: .75rem;
+}
+.icon-help {
+  font-size: 0.8rem;
+  color:color(secondary);
+  vertical-align: super;
+}
+
+/* Datable: class for reorder column icons */
+.icon {
+  position: absolute;
+}
+.datatable-icon-down {
+  top: 0;
+}
+.datatable-icon-up {
+  top: 40px;
+}
+.dragFromLeft .icon {
+  left: -13px;
+}
+
+/* Datable : fix loading indicator width */
+::ng-deep {
+  .progress-linear {
+    position: relative !important;
+
+    .container {
+      max-width: 100% !important;
+    }
+  }
+}
+
+/* Datable: row*/
+::ng-deep .row-group {
+  background-color: rgba(152, 196, 231, .3);
+  border: 1px;
+}
+::ng-deep .row-user {
+  //background-color: rgba(255, 201, 123, .2);
+
+}
+::ng-deep .datatable-row-wrapper {
+  border-bottom: 1px solid #dddddd;
+}

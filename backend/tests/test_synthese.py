@@ -78,8 +78,7 @@ class TestSynthese:
 
         response = self.client.get(url_for("gn_synthese.get_observations_for_web"))
         data = json_of_response(response)
-
-        assert len(data["data"]["features"]) > 0
+        assert len(data["data"]["features"]) == 0
         assert response.status_code == 200
 
     def test_filter_cor_observers(self):
@@ -97,6 +96,8 @@ class TestSynthese:
         assert response.status_code == 200
 
     def test_export(self):
+        # Set config param because "shapefile" is not set by default
+        current_app.config["SYNTHESE"]["EXPORT_FORMAT"] = ["csv", "geojson", "shapefile", "gpkg"]
         token = get_token(self.client, login="admin", password="admin")
         self.client.set_cookie("/", "token", token)
 
@@ -123,6 +124,14 @@ class TestSynthese:
             url_for("gn_synthese.export_observations_web"),
             json_dict=[1, 2, 3],
             query_string={"export_format": "shapefile"},
+        )
+        assert response.status_code == 200
+
+        response = post_json(
+            self.client,
+            url_for("gn_synthese.export_observations_web"),
+            json_dict=[1, 2, 3],
+            query_string={"export_format": "gpkg"},
         )
         assert response.status_code == 200
 

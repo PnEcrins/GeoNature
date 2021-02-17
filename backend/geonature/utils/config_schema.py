@@ -93,7 +93,7 @@ class MailConfig(Schema):
 
 
 class AccountManagement(Schema):
-    # Config for sign-up
+    # Configuration parameters for sign-up
     ENABLE_SIGN_UP = fields.Boolean(missing=False)
     ENABLE_USER_MANAGEMENT = fields.Boolean(missing=False)
     AUTO_ACCOUNT_CREATION = fields.Boolean(missing=True)
@@ -101,6 +101,21 @@ class AccountManagement(Schema):
     VALIDATOR_EMAIL = EmailStrOrListOfEmailStrField(missing=None)
     ACCOUNT_FORM = fields.List(fields.Dict(), missing=[])
     ADDON_USER_EMAIL = fields.String(missing="")
+
+
+class PermissionManagement(Schema):
+    # Configuration parameters for permissions managment and access request
+    ENABLE_ACCESS_REQUEST = fields.Boolean(missing=False)
+    AREA_TYPES = fields.List(fields.Integer(), missing=[25, 26])
+    DATA_ACCESS_RULES_LINK = fields.String(missing=None)
+    DEFAULT_ACCESS_DURATION = fields.Integer(missing=None)
+    MAX_ACCESS_DURATION = fields.Integer(missing=365)
+    VALIDATOR_EMAIL = EmailStrOrListOfEmailStrField(missing=None)
+    REQUEST_FORM_TITLE = fields.String(missing=None)
+    REQUEST_FORM = fields.List(fields.Dict(), missing=[])
+    ENABLE_CONVENTION = fields.Boolean(missing=False)
+    CONVENTION_TITLE = fields.String(missing=None)
+    CONVENTION_VALIDATE = fields.String(missing=None)
 
 
 class UsersHubConfig(Schema):
@@ -135,9 +150,7 @@ class MetadataConfig(Schema):
     plus possible d'ajouter des jeux de données au cadre d'acquisition par la suite.""")
 
 
-# class a utiliser pour les paramètres que l'on ne veut pas passer au frontend
-
-
+# Class to use for parameters you NOT want to pass to frontend
 class GnPySchemaConf(Schema):
     SQLALCHEMY_DATABASE_URI = fields.String(
         required=True,
@@ -165,6 +178,7 @@ class GnPySchemaConf(Schema):
     METADATA = fields.Nested(MetadataConfig, missing=dict())
     ADMIN_APPLICATION_LOGIN = fields.String()
     ACCOUNT_MANAGEMENT = fields.Nested(AccountManagement, missing={})
+    PERMISSION_MANAGEMENT = fields.Nested(PermissionManagement, missing={})
     USERSHUB = fields.Nested(UsersHubConfig, missing={})
     SERVER = fields.Nested(ServerConfig, missing={})
     MEDIAS = fields.Nested(MediasConfig, missing={})
@@ -313,7 +327,7 @@ class MapConfig(Schema):
     ZOOM_ON_CLICK = fields.Integer(missing=18)
 
 
-# class a utiliser pour les paramètres que l'on veut passer au frontend
+# Class to use for parameters you WANT to pass to frontend
 class GnGeneralSchemaConf(Schema):
     appName = fields.String(missing="GeoNature2")
     LOGO_STRUCTURE_FILE = fields.String(missing="logo_structure.png")
@@ -338,6 +352,7 @@ class GnGeneralSchemaConf(Schema):
     BDD = fields.Nested(BddConfig, missing=dict())
     URL_USERSHUB = fields.Url(required=False)
     ACCOUNT_MANAGEMENT = fields.Nested(AccountManagement, missing={})
+    PERMISSION_MANAGEMENT = fields.Nested(PermissionManagement, missing={})
     MEDIAS = fields.Nested(MediasConfig, missing={})
     UPLOAD_FOLDER = fields.String(missing="static/medias")
     METADATA = fields.Nested(MetadataConfig, missing={})

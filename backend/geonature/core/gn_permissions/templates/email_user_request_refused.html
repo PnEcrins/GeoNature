@@ -1,0 +1,41 @@
+<p>*** Ceci est un message généré automatiquement ***</p>
+<p>Bonjour {{ user.prenom_role }}  {{ user.nom_role }},</p>
+<p>
+    Votre demande de permissions d'accès à "{{ app_name }}" vient d'être refusée.<br/>
+    {% if refusal_reason %}
+        Raison du refus : {{ refusal_reason }}
+    {% endif %}
+</p>
+
+<h5>Rappel de votre demande</h5>
+<p>
+    Vous aviez demandé un accès précis
+    {% if end_date %}
+        jusqu’au <b>{{ end_date }}</b>.
+    {% else %}
+        <b>permanent</b>.
+    {% endif %}
+    aux observations :
+</p>
+<ul>
+    <li>privés: OUI</li>
+    <li>
+        <b>sensibles</b> :
+        {{ "OUI" if sensitive_permission else "NON" }}
+    </li>
+</ul>
+<p>Votre accès était limité aux :</p>
+<ul>
+    <li>
+        entités géographiques :
+        {{ geographic_filter_values | join(" ; ") if geographic_filter_values | length > 0 else "Aucune" }}.
+    </li>
+    <li>
+        groupes taxonomiques :
+        {{ taxonomic_filter_values | join(" ; ") | safe if taxonomic_filter_values | length > 0 else "Aucun" }}.
+    </li>
+</ul>
+
+<p>Pour plus d'information n'hésitez pas à nous contacter : {{ validators }}.</p>
+<p>Bien cordialement,</p>
+<p>l'administrateur.</p>

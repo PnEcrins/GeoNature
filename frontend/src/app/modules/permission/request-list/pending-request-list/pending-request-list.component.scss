@@ -1,0 +1,33 @@
+/* Class for reorder column icons */
+.icon {
+  position: absolute;
+}
+.datatable-icon-down {
+  top: 0;
+}
+.datatable-icon-up {
+  top: 40px;
+}
+.dragFromLeft .icon {
+  left: -13px;
+}
+
+/* Fix loading indicator width */
+::ng-deep {
+  .progress-linear {
+    position: relative !important;
+
+    .container {
+      max-width: 100% !important;
+    }
+  }
+}
+
+/* Header */
+.header-icon {
+  display: block;
+  font-size: 3rem;
+  width: 3rem;
+  height: 3rem;
+  margin-right: .75rem;
+}

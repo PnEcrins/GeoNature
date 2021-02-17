@@ -91,5 +91,10 @@
         "Total":"Total"
     },
     "IntroMessage":"欢迎来到CONTACT模块. 它允许根据SINP分类群发现标准来捕获观测值.",
-    "ErrorMessage":"Dommage, c'est pas bon"
+    "ErrorMessage":"Dommage, c'est pas bon",
+    "Datatable": {
+      "emptyMessage": "没有数据可显示。",
+      "totalMessage": "总",
+      "selectedMessage": "已选"
+    }
 }

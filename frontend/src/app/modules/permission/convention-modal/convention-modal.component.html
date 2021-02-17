@@ -1,0 +1,43 @@
+<div class="modal-header">
+  <h2 class="modal-title" id="modal-basic-title">
+    <span *ngIf="title ; else defaultTitle">
+      {{ title }}
+    </span>
+    <ng-template #defaultTitle>
+      {{ 'Permissions.accessRequest.conventionTitle' | translate }}
+    </ng-template>
+  </h2>
+  <button ngbAutofocus type="button" class="close" aria-label="Close" (click)="activeModal.dismiss()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <gn-access-request-convention
+    [user]="userInfos"
+    [accessRequest]="accessRequestInfos"
+    [customData]="customData"
+  ></gn-access-request-convention>
+</div>
+<div class="modal-footer d-flex flex-row">
+  <button
+    type="button"
+    mat-raised-button
+    class="mr-auto"
+    (click)="activeModal.dismiss()"
+  >
+    <mat-icon>cancel</mat-icon>
+    {{ 'Cancel' | translate }}
+  </button>
+
+  <button
+    type="button"
+    mat-raised-button
+    color="primary"
+    ngbAutofocus
+    (click)="activeModal.close('success')"
+  >
+    <mat-icon>check</mat-icon>
+    <span *ngIf="validate ; else defaultValidateBtn">{{ validate }}</span>
+    <ng-template #defaultValidateBtn>{{ 'Validate' | translate }}</ng-template>
+  </button>
+</div>

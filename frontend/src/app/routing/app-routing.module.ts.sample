@@ -86,6 +86,13 @@ const defaultRoutes: Routes = [
           loadChildren: '@geonature/userModule/user.module#UserModule',
         },
       {% endif %}
+      {% if enable_access_request %}
+        {
+          path: 'permissions',
+          data: { module_code: 'permissions_access_request' },
+          loadChildren: '@geonature/modules/permission/permission.module#PermissionModule',
+        },
+      {% endif %}
       {
         path: 'test/medias/:uuidAttachedRow',
         component: MediasTestComponent,

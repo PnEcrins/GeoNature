@@ -94,7 +94,7 @@ import { APP_CONFIG_TOKEN, AppConfig } from '@geonature_config/app.config';
     NewPasswordComponent,
     NavHomeComponent,
     FooterComponent,
-    IntroductionComponent
+    IntroductionComponent,
   ],
   providers: [
     AuthService,

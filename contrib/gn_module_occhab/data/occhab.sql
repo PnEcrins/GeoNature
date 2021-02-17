@@ -306,4 +306,74 @@ INSERT INTO gn_commons.bib_tables_location (table_desc, schema_name, table_name,
 ,('Station correspondant à un regroupement d''occurence d''habitat du module OccHab', 'pr_occhab', 't_stations', 'id_station', 'unique_id_sinp_station')
 ;
 
--- ;
+-- ----------------------------------------------------------------------
+-- Add available OccHab permissions
+
+-- OCCHAB - CR--ED - ALL - SCOPE
+INSERT INTO gn_permissions.cor_module_action_object_filter (
+    id_module, id_action, id_object, id_filter_type, code, label, description
+) 
+    SELECT
+        gn_commons.get_id_module_bycode('OCCHAB'),
+        gn_permissions.get_id_action('C'),
+        gn_permissions.get_id_object('ALL'),
+        gn_permissions.get_id_filter_type('SCOPE'),
+        'OCCHAB-C-ALL-SCOPE',
+        'Créer des données',
+        'Créer des données dans OccHab en étant limité par l''appartenance.'
+    WHERE NOT EXISTS (
+        SELECT 'X'
+        FROM gn_permissions.cor_module_action_object_filter AS cmaof
+        WHERE cmaof.code = 'OCCHAB-C-ALL-SCOPE'
+    ) ;
+
+INSERT INTO gn_permissions.cor_module_action_object_filter (
+    id_module, id_action, id_object, id_filter_type, code, label, description
+) 
+    SELECT
+        gn_commons.get_id_module_bycode('OCCHAB'),
+        gn_permissions.get_id_action('R'),
+        gn_permissions.get_id_object('ALL'),
+        gn_permissions.get_id_filter_type('SCOPE'),
+        'OCCHAB-R-ALL-SCOPE',
+        'Lire les données',
+        'Lire les données dans OccHab limitées en étant limité par l''appartenance.'
+    WHERE NOT EXISTS (
+        SELECT 'X'
+        FROM gn_permissions.cor_module_action_object_filter AS cmaof
+        WHERE cmaof.code = 'OCCHAB-R-ALL-SCOPE'
+    ) ;
+
+INSERT INTO gn_permissions.cor_module_action_object_filter (
+    id_module, id_action, id_object, id_filter_type, code, label, description
+) 
+    SELECT
+        gn_commons.get_id_module_bycode('OCCHAB'),
+        gn_permissions.get_id_action('E'),
+        gn_permissions.get_id_object('ALL'),
+        gn_permissions.get_id_filter_type('SCOPE'),
+        'OCCHAB-E-ALL-SCOPE',
+        'Exporter des données',
+        'Exporter des données dans OccHab en étant limité par l''appartenance.'
+    WHERE NOT EXISTS (
+        SELECT 'X'
+        FROM gn_permissions.cor_module_action_object_filter AS cmaof
+        WHERE cmaof.code = 'OCCHAB-E-ALL-SCOPE'
+    ) ;
+
+INSERT INTO gn_permissions.cor_module_action_object_filter (
+    id_module, id_action, id_object, id_filter_type, code, label, description
+) 
+    SELECT
+        gn_commons.get_id_module_bycode('OCCHAB'),
+        gn_permissions.get_id_action('D'),
+        gn_permissions.get_id_object('ALL'),
+        gn_permissions.get_id_filter_type('SCOPE'),
+        'OCCHAB-D-ALL-SCOPE',
+        'Supprimer des données',
+        'Supprimer des données dans OccHab en étant limité par l''appartenance.'
+    WHERE NOT EXISTS (
+        SELECT 'X'
+        FROM gn_permissions.cor_module_action_object_filter AS cmaof
+        WHERE cmaof.code = 'OCCHAB-D-ALL-SCOPE'
+    ) ;

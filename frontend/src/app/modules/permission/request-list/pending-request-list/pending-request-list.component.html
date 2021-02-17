@@ -1,0 +1,125 @@
+<div class="row">
+  <div class="form-group col-sm-6">
+    <div class="input-group input-group-sm">
+      <div class="input-group-prepend">
+        <span class="input-group-text">
+          <mat-icon [inline]="true">filter_alt</mat-icon>
+        </span>
+      </div>
+      <input
+        class="form-control form-control-sm"
+        type="text"
+        placeholder="Filtrer les demandes..."
+        (keyup)="updateFilter($event)"
+        matTooltip="Filtre disponible sur les colonnes : {{searchableColumnsNames}}.
+          Pour les dates, utiliser le format : AAAA-MM-JJ.
+          Le filtre est insensible à la casse."
+      >
+    </div>
+  </div>
+</div>
+
+<ngx-datatable
+  class="material striped"
+  [columns]="columns"
+  [rows]="rows"
+  [columnMode]="'flex'"
+  [loadingIndicator]="loadingIndicator"
+  [reorderable]="reorderable"
+  [swapColumns]="swapColumns"
+  [headerHeight]="50"
+  [footerHeight]="50"
+  [rowHeight]="'auto'"
+  [limit]="5"
+  [targetMarkerTemplate]="targetMarkerTemplate"
+>
+  <ng-template #colHeaderTpl let-column="column" let-sort="sortFn">
+    <span
+      class="datatable-header-cell-wrapper"
+      [matTooltip]="column.tooltip"
+      matTooltipPosition="above"
+    >
+      <span
+        class="datatable-header-cell-label draggable"
+        (click)="sort()"
+      >
+        {{ column.name }}
+      </span>
+    </span>
+    <span class="sort-btn"></span>
+  </ng-template>
+
+  <ng-template #tokenCellTpl let-value="value">
+    <span [matTooltip]="value"> {{ value | slice:0:5 }}...</span>
+  </ng-template>
+
+  <ng-template #endAccessDateCellTpl let-value="value">
+    <span *ngIf="value; else permanentPermission"> {{ value | date:'mediumDate':undefined:locale }}</span>
+    <ng-template #permanentPermission>Aucune</ng-template>
+  </ng-template>
+
+  <ng-template #geographicCellTpl let-value="value">
+      <span class="d-inline-block w-100 h-100" [matTooltip]="value?.join(',\n')">
+        {{ value?.length }}
+      </span>
+  </ng-template>
+
+  <ng-template #taxonomicCellTpl let-value="value">
+    <span class="d-inline-block w-100 h-100" [matTooltip]="value?.join(',\n') | stripHTML">
+      {{ value?.length }}
+    </span>
+  </ng-template>
+
+  <ng-template #sensitiveCellTpl let-value="value">
+    <strong *ngIf="value; else unsensitive" class="text-danger">OUI</strong>
+    <ng-template #unsensitive>NON</ng-template>
+  </ng-template>
+
+  <ng-template #createDateCellTpl let-value="value">
+    <span> {{ value | date:'short':undefined:locale }}</span>
+  </ng-template>
+
+
+  <ng-template #actionsCellTpl let-value="value" let-row="row">
+    <div class="d-flex justify-content-end flex-wrap">
+      <button
+        class="mat-elevation-z1 mx-1"
+        mat-icon-button
+        matRipple
+        matTooltip="Visualiser la demande."
+        routerLink="/permissions/requests/{{ row.token }}"
+        [routerLink]="['/permissions/requests/', row.token, { user: row.userName, organism: row.organismName }]"
+      >
+        <mat-icon>description</mat-icon>
+      </button>
+      <button
+        class="mat-elevation-z1 mx-1"
+        mat-icon-button
+        color="primary"
+        matRipple
+        matTooltip="Valider la demande."
+        (click)="openAcceptDialog(row)"
+      >
+        <mat-icon>how_to_reg</mat-icon>
+      </button>
+      <button
+        class="mat-elevation-z1 mx-1"
+        mat-icon-button
+        color="warn"
+        matRipple
+        matTooltip="Refuser la demande."
+        (click)="openRefusalDialog(row)"
+      >
+        <mat-icon>block</mat-icon>
+      </button>
+    </div>
+  </ng-template>
+</ngx-datatable>
+
+<!-- Reorderable columns templates -->
+<ng-template #targetMarkerTemplate let-class="class">
+  <div [ngClass]="class">
+    <div class="icon datatable-icon-down"></div>
+    <div class="icon datatable-icon-up"></div>
+  </div>
+</ng-template>

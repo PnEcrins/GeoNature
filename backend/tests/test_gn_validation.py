@@ -24,6 +24,12 @@ class TestValidation:
             "cd_nom",
             "unique_id_sinp",
             "meta_update_date",
+            "id_nomenclature_valid_status",
+            "entity_source_pk_value",
+            "mnemonique",
+            "label_default",
+            "nom_vern",
+            "lb_nom"
         ]
         response_key = data["data"]["features"][0]["properties"].keys()
         for c in mandatory_columns:

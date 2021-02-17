@@ -23,6 +23,10 @@
   "Columns": "Colonnes",
   "Cancel": "Annuler",
   "Delete": "Supprimer",
+  "Send": "Envoyer",
+  "Validate": "Valider",
+  "Create": "Ajouter",
+  "Update": "Mettre à jour",
   "Yes": "Oui",
   "No": "Non",
   "NotAllowed": "Vous n'avez pas les droits pour effectuer cette action",
@@ -225,5 +229,106 @@
     "type": "Type de média",
     "next": "Voir le média suivant",
     "previous": "Voir le média précédent"
+  },
+  "Permissions": {
+    "accessRequest": {
+      "link": "Demande accès données précises",
+      "formTitle": "Demande de permissions d'accès",
+      "permissionTitle": "Permissions demandées",
+      "regularFormIntro": "Veuillez indiquer ci-dessous les zones géographiques pour lesquelles vous souhaitez accéder aux données à leur précision maximale. Merci de préciser également les groupes taxonomiques concernés et le calendrier de votre étude.",
+      "sendBtnTooltip": "Envoyer votre demande d'accès.",
+      "cancelBtnTooltip": "Annuler votre demande d'accès.",
+      "geoAreaLabel": "Zones géographiques",
+      "geoAreaTooltip": "Dans la zone « Rechercher » saisir les premières lettres d'une zone géographique. La touche « Tab » vous permet d'accéder à la liste des zones trouvées. Sélectionner l'élément qui vous convient dans la liste proposée avec les touches directionnelles et valider votre sélection avec la touche « Entrée ».",
+      "taxaLabel": "Groupes taxonomiques",
+      "taxaTooltip": "Dans la zone « Rechercher » saisir les premières lettres du nom d'un groupe taxonomique supérieur au rang d'espèce. La touche « Tab » vous permet d'accéder à la liste des noms trouvés. Sélectionner l'élément qui vous convient dans la liste proposée avec les touches directionnelles et valider votre sélection avec la touche « Entrée ».",
+      "sensitiveAccessLabel": "Observations sensibles",
+      "sensitiveAccessText" : "Je souhaite accéder aux observations sensibles",
+      "sensitiveAccessRules": "Merci de consulter au préalable les règles d’accès aux données sensibles",
+      "endDateLabel": "Accès jusqu'au",
+      "sending": "Votre demande est en cours d'envoie...",
+      "responseOk": "Votre demande a bien été prise en compte. Elle va être évaluée par un administrateur.",
+      "responseError": "Une erreur est survenue lors de la prise en compte de votre demande.",
+      "conventionTitle": "Convention",
+      "conventionCanceled": "L'acceptation de la convention vient d'être annulé.",
+      "accepted": "Acceptée",
+      "refused": "Refusée",
+      "acceptOk": "Acceptation de la demande prise en compte",
+      "acceptKo": "Une erreur est survenue lors de l'acceptation de la demande : {{errorMsg}}",
+      "refusalOk": "Refus de la demande prise en compte",
+      "refusalKo": "Une erreur est survenue lors du refus de la demande : {{errorMsg}}",
+      "pendingOk": "Mise en attente de la demande réalisée",
+      "pendingKo": "Une erreur est survenue lors de la mise en attente de la demande : {{errorMsg}}"
+    },
+    "filters": {
+      "types": {
+        "SCOPE": "Appartenance",
+        "GEOGRAPHIC": "Géographique",
+        "TAXONOMIC": "Taxonomique",
+        "PRECISION": "Précision"
+      },
+      "tooltips": {
+        "SCOPE": "Permission limitée par le type d''appartenance des données.",
+        "GEOGRAPHIC": "Permission limitée par des zones géographiques.",
+        "TAXONOMIC": "Permission limitée par des taxons.",
+        "PRECISION": "Active (=floutée) ou désactive (=exacte) le floutage des données (sensibles ou privées)."
+      },
+      "values": {
+        "SCOPE": {
+          "0": "de personne",
+          "1": "à moi",
+          "2": "de mon organisme",
+          "3": "de tout le monde"
+        },
+        "PRECISION": {
+          "exact": "Exacte",
+          "fuzzy": "Floutée"
+        }
+      }
+    },
+    "deleteOk": "Suppression de la permission prise en compte",
+    "deleteKo": "Une erreur est survenue lors de la suppression de la permission : {{errorMsg}}",
+    "titles": {
+      "update": "Édition d'une permission",
+      "add": "Ajout d'une permission",
+      "addBaseOnInheritance": "Surcharge d'une permission héritée"
+    },
+    "previous": "Précédent",
+    "next": "Suivant",
+    "reset": "Réinitialiser",
+    "module": {
+      "label": "Modules",
+      "stepLabel": "Module",
+      "moduleHelp": "Choisissez un module."
+    },
+    "actionObject": {
+      "label": "Permissions",
+      "stepLabel": "Permission",
+      "actionObjectHelp": "Choisissez une permission."
+    },
+    "filter": {
+      "stepLabel": "Filtre",
+      "atLeastOneFieldMsg": "Au moins un filtre doit être sélectionné. Le filtre d'appartenance est obligatoire."
+    },
+    "validating": {
+      "stepLabel": "Validation",
+      "endDateLabel": "Date de fin de permission",
+      "endDateTooltip": "Format de la date de fin de permisison : jj/mm/aaaa.",
+      "endDateHelp": "Choisissez une date ou laisser vide pour rendre permanente la permission."
+    },
+    "addingOk": "Permission ajoutée avec succès.",
+    "addingKo": "Une erreur est survenue lors de l'ajout de la permission.",
+    "updatingOk": "Permission mise à jour avec succès.",
+    "updatingKo": "Une erreur est survenue lors de la mise à jour de la permission.",
+    "loading": "Chargement en cours...",
+    "errors": {
+      "std": "Une erreur est survenue",
+      "stdMsg": "Une erreur est survenue : {{errorMsg}}"
+    }
+  },
+  "Datatable": {
+    "emptyMessage": "Aucune donnée à afficher.",
+    "totalMessage": "total",
+    "selectedMessage": "selectionnés"
   }
 }

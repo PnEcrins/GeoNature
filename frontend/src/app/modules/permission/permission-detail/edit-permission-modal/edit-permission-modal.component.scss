@@ -1,0 +1,37 @@
+
+// Form fields
+mat-form-field {
+  padding: .3rem;
+}
+form.ng-invalid, mat-select.ng-invalid {
+  border-left: none !important;
+}
+
+// Modal
+::ng-deep .edit-permission-modal .mat-dialog-container {
+  padding: 0 !important;
+  overflow-x: hidden;
+}
+.mat-dialog-title {
+  margin-bottom: 0 !important;
+}
+::ng-deep .edit-permission-modal  .mat-horizontal-content-container {
+  padding: 0 !important;
+}
+.modal-header, .modal-footer {
+  background-color: rgba(0,0,0,.03);
+  border-bottom: 1px solid rgba(0,0,0,.125);
+}
+
+mat-dialog-content {
+  max-height: 75vh !important;
+}
+.mat-dialog-content {
+  margin: 0;
+  padding: 0;
+}
+.modal-body {
+  min-height: 20vh;
+  max-height: 39vh;
+  overflow-y: auto;
+}

@@ -1,0 +1,23 @@
+<h1 mat-dialog-title>
+  <mat-icon inline="true">how_to_reg</mat-icon>
+  Confirmez vous accepter la demande suivante ?
+</h1>
+<div mat-dialog-content>
+  <gn-permission-request-display [request]="request" [dense]="true"></gn-permission-request-display>
+</div>
+<div mat-dialog-actions class="d-flex justify-content-between">
+  <button mat-button class="mat-elevation-z2" color="secondary" mat-dialog-close>
+    <mat-icon>cancel</mat-icon>
+    Annuler
+  </button>
+  <button
+    mat-button
+    class="mat-elevation-z2"
+    color="primary"
+    [mat-dialog-close]="request.token"
+    cdkFocusInitial
+  >
+    <mat-icon>check_circle</mat-icon>
+    Oui
+  </button>
+</div>

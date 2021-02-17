@@ -1155,11 +1155,96 @@ SELECT id_liste, (SELECT id_role FROM utilisateurs.t_roles WHERE nom_role = 'Grp
 FROM utilisateurs.t_listes
 WHERE code_liste = 'obsocctax';
 
-
+-- Add new source for OccTax module
 INSERT INTO gn_synthese.t_sources ( name_source, desc_source, entity_source_pk_field, url_source)
  VALUES ('Occtax', 'Données issues du module Occtax', 'pr_occtax.cor_counting_occtax.id_counting_occtax', '#/occtax/info/id_counting');
 
-INSERT INTO gn_permissions.cor_object_module (id_object, id_module)
-SELECT o.id_object, t.id_module
-FROM gn_permissions.t_objects o, gn_commons.t_modules t
-WHERE o.code_object = 'TDatasets' AND t.module_code = 'OCCTAX';
+
+-- ----------------------------------------------------------------------
+-- Add available OccTax permissions
+
+-- OCCTAX - CRU-ED - ALL - SCOPE
+INSERT INTO gn_permissions.cor_module_action_object_filter (
+    id_module, id_action, id_object, id_filter_type, code, label, description
+) 
+    SELECT
+        gn_commons.get_id_module_bycode('OCCTAX'),
+        gn_permissions.get_id_action('C'),
+        gn_permissions.get_id_object('ALL'),
+        gn_permissions.get_id_filter_type('SCOPE'),
+        'OCCTAX-C-ALL-SCOPE',
+        'Créer des données',
+        'Créer des données dans OccTax en étant limité par l''appartenance.'
+    WHERE NOT EXISTS (
+        SELECT 'X'
+        FROM gn_permissions.cor_module_action_object_filter AS cmaof
+        WHERE cmaof.code = 'OCCTAX-C-ALL-SCOPE'
+    ) ;
+
+INSERT INTO gn_permissions.cor_module_action_object_filter (
+    id_module, id_action, id_object, id_filter_type, code, label, description
+) 
+    SELECT
+        gn_commons.get_id_module_bycode('OCCTAX'),
+        gn_permissions.get_id_action('R'),
+        gn_permissions.get_id_object('ALL'),
+        gn_permissions.get_id_filter_type('SCOPE'),
+        'OCCTAX-R-ALL-SCOPE',
+        'Lire les données',
+        'Lire les données dans OccTax limitées en étant limité par l''appartenance.'
+    WHERE NOT EXISTS (
+        SELECT 'X'
+        FROM gn_permissions.cor_module_action_object_filter AS cmaof
+        WHERE cmaof.code = 'OCCTAX-R-ALL-SCOPE'
+    ) ;
+
+INSERT INTO gn_permissions.cor_module_action_object_filter (
+    id_module, id_action, id_object, id_filter_type, code, label, description
+) 
+    SELECT
+        gn_commons.get_id_module_bycode('OCCTAX'),
+        gn_permissions.get_id_action('U'),
+        gn_permissions.get_id_object('ALL'),
+        gn_permissions.get_id_filter_type('SCOPE'),
+        'OCCTAX-U-ALL-SCOPE',
+        'Mettre à jour des données',
+        'Mettre à jour des données dans OccTax en étant limité par l''appartenance.'
+    WHERE NOT EXISTS (
+        SELECT 'X'
+        FROM gn_permissions.cor_module_action_object_filter AS cmaof
+        WHERE cmaof.code = 'OCCTAX-U-ALL-SCOPE'
+    ) ;
+
+INSERT INTO gn_permissions.cor_module_action_object_filter (
+    id_module, id_action, id_object, id_filter_type, code, label, description
+) 
+    SELECT
+        gn_commons.get_id_module_bycode('OCCTAX'),
+        gn_permissions.get_id_action('E'),
+        gn_permissions.get_id_object('ALL'),
+        gn_permissions.get_id_filter_type('SCOPE'),
+        'OCCTAX-E-ALL-SCOPE',
+        'Exporter des données',
+        'Exporter des données dans OccTax en étant limité par l''appartenance.'
+    WHERE NOT EXISTS (
+        SELECT 'X'
+        FROM gn_permissions.cor_module_action_object_filter AS cmaof
+        WHERE cmaof.code = 'OCCTAX-E-ALL-SCOPE'
+    ) ;
+
+INSERT INTO gn_permissions.cor_module_action_object_filter (
+    id_module, id_action, id_object, id_filter_type, code, label, description
+) 
+    SELECT
+        gn_commons.get_id_module_bycode('OCCTAX'),
+        gn_permissions.get_id_action('D'),
+        gn_permissions.get_id_object('ALL'),
+        gn_permissions.get_id_filter_type('SCOPE'),
+        'OCCTAX-D-ALL-SCOPE',
+        'Supprimer des données',
+        'Supprimer des données dans OccTax en étant limité par l''appartenance.'
+    WHERE NOT EXISTS (
+        SELECT 'X'
+        FROM gn_permissions.cor_module_action_object_filter AS cmaof
+        WHERE cmaof.code = 'OCCTAX-D-ALL-SCOPE'
+    ) ;

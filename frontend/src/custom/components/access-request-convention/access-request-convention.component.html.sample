@@ -1,0 +1,24 @@
+<!-- YOUR CUSTOM ACCESS REQUEST CONVENTION HERE -->
+<p>
+  <i>{{user.firstname}} {{user.lastname}}</i> désigné sous le terme « l’utilisateur identifié »
+  s’engage à respecter les termes suivants.
+</p>
+<p>
+  « L’utilisateur identifié » signataire de la présente convention déclare avoir pris connaissance
+  et approuver la charte. Les données sont mises à disposition pour les droits de consultation
+  suivants :
+</p>
+<ul>
+    <li>délimitation géographique : {{accessRequest.areas}}</li>
+    <li>
+      groupes systématiques :
+      <span *ngIf="accessRequest.taxa ; else allTaxa" [innerHtml]="accessRequest.taxa | safeHTML"></span>
+      <ng-template #allTaxa><i>tous</i></ng-template>
+    </li>
+    <li *ngIf="accessRequest.sensitiveAccess">accés données sensibles : <i>oui</i></li>
+    <li>
+      durée de mise à disposition :
+      <span *ngIf="accessRequest.endAccessDate ; else unlimitedAccess">{{accessRequest.endAccessDate}}</span>
+      <ng-template #unlimitedAccess><i>illimitée</i></ng-template>
+    </li>
+</ul>

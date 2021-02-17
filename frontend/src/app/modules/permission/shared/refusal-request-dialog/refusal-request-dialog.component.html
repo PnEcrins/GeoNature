@@ -1,0 +1,58 @@
+<h1 mat-dialog-title>
+  <mat-icon inline="true">block</mat-icon>
+  Confirmez vous refuser la demande suivante ?
+</h1>
+
+<div mat-dialog-content>
+
+  <gn-permission-request-display [request]="request" [dense]="true"></gn-permission-request-display>
+
+  <mat-divider></mat-divider>
+
+  <div class="container-fluid">
+    <div class="row">
+      <mat-form-field class="col" hintLabel="Max 1000 caractères" appearance="outline">
+        <mat-label>Motif du refus</mat-label>
+        <textarea
+          #reason="ngModel"
+          id="refusalReason"
+          matInput
+          [(ngModel)]="request.refusalReason"
+          name="refusalReason"
+          placeholder="Indiquer la raison du refus de cette demande"
+          rows="6"
+          maxlength="1000"
+          required
+        ></textarea>
+        <mat-hint align="end">{{reason.value?.length || 0}}/1000</mat-hint>
+        <mat-error *ngIf="reason.invalid">
+          Vous devez indiquer une raison au refus.
+        </mat-error>
+      </mat-form-field>
+      <p>{{reason.ngControl}}</p>
+    </div>
+  </div>
+</div>
+
+<div mat-dialog-actions class="d-flex justify-content-between">
+  <button mat-button class="mat-elevation-z2" color="secondary" mat-dialog-close>
+    <mat-icon>cancel</mat-icon>
+    Annuler
+  </button>
+  <div
+    matTooltip="Veuillez indiquer la raison du refus avant de confirmer."
+    matTooltipPosition="above"
+    [matTooltipDisabled]="!reason.invalid"
+  >
+    <button
+      mat-button
+      class="mat-elevation-z2"
+      color="primary"
+      [disabled]="reason.invalid"
+      [mat-dialog-close]="request"
+    >
+      <mat-icon>check_circle</mat-icon>
+      Oui
+    </button>
+  </div>
+</div>

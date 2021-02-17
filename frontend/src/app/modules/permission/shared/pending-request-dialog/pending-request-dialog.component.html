@@ -1,0 +1,27 @@
+<h1 mat-dialog-title>
+  <mat-icon inline="true">pending</mat-icon>
+  Confirmez vous remettre en attente la demande suivante ?
+</h1>
+<div mat-dialog-content>
+  <p *ngIf="request.processedState == 'accepted'" class="bg-warning text-dark p-2 border rounded-lg">
+    Remettre en attente cette demande supprimera les permissions accordées.<br />
+    L'utilisateur recevra un email pour le prévenir.
+  </p>
+  <gn-permission-request-display [request]="request" [dense]="true"></gn-permission-request-display>
+</div>
+<div mat-dialog-actions class="d-flex justify-content-between">
+  <button mat-button class="mat-elevation-z2" color="secondary" mat-dialog-close>
+    <mat-icon>cancel</mat-icon>
+    Annuler
+  </button>
+  <button
+    mat-button
+    class="mat-elevation-z2"
+    color="primary"
+    [mat-dialog-close]="request.token"
+    cdkFocusInitial
+  >
+    <mat-icon>check_circle</mat-icon>
+    Oui
+  </button>
+</div>

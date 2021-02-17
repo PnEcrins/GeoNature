@@ -1,0 +1,308 @@
+<div class="modal-header">
+  <h1 class="modal-title" mat-dialog-title>
+    <ng-container *ngIf="(updateMode | async); else addModeTitleTpl">
+      <mat-icon inline="true">edit</mat-icon>
+      <ng-container *ngIf="!permission.isInherited; else addBaseOnInheritedPermission">
+        {{ 'Permissions.titles.update' | translate }}
+      </ng-container>
+      <ng-template #addBaseOnInheritedPermission>
+        {{ 'Permissions.titles.addBaseOnInheritance' | translate }}
+      </ng-template>
+    </ng-container>
+    <ng-template #addModeTitleTpl>
+      <mat-icon inline="true">add_box</mat-icon>
+      {{ 'Permissions.titles.add' | translate }}
+    </ng-template>
+  </h1>
+
+  <button type="button" class="close" aria-label="Close" mat-dialog-close>
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+
+<div mat-dialog-content>
+  <p *ngIf="permission.isInherited" class="alert alert-warning m-3" role="alert">
+    <strong>Attention :</strong> la permission en cours de modification est basée sur une permission héritée
+    <ng-container *ngIf="permission.inheritedBy.byModule">
+      du module <strong>{{permission.inheritedBy.moduleCode}}</strong>
+    </ng-container>
+    <ng-container *ngIf="permission.inheritedBy.byGroup">
+      via le groupe <strong>{{permission.inheritedBy.groupName}}</strong>
+    </ng-container>.<br/>
+    {{role.type == "GROUP" ? "Ce groupe"  : "Cet utilisateur" }} ne possède pas encore
+    de permission équivalante dans ce module.<br/>
+    Son enregistrement va entrainer la création d'une nouvelle permission
+    qui viendra surcharger la permission héritée.
+  </p>
+
+  <p *ngIf="role.type == 'USER'" class="alert alert-warning m-3" role="alert">
+    <ng-container *ngIf="role.groups && role.groups.length > 0; else userWithoutGroup">
+      Préferez l'attribution de permissions aux groupes de cet utilisateur
+      pour simplifier leurs gestion.
+    </ng-container>
+    <ng-template #userWithoutGroup>
+      Cet utilisateur ne possède pas de groupe.<br/>
+      Pour simplifier la gestion des permissions, il serait préférable d'en créer un
+      (via <i>UsersHub</i> si vous en disposez), d'y associer cet utilisateur et
+      d'ajouter la permission au nouveau groupe.
+    </ng-template>
+  </p>
+
+  <form [formGroup]="formGroup">
+    <mat-horizontal-stepper linear labelPosition="bottom" #stepper>
+      <mat-step formGroupName="modules" [stepControl]="formGroup?.controls.modules">
+        <ng-template matStepLabel>{{ 'Permissions.module.stepLabel' | translate }}</ng-template>
+
+        <div class="modal-body d-flex flex-column">
+          <mat-form-field class="w-100">
+            <mat-label>{{ 'Permissions.module.label' | translate }}</mat-label>
+            <mat-select
+              formControlName="module"
+              cdkFocusInitial
+              (selectionChange)="loadActionsObjects($event.value)"
+              aria-describedby="permission-module-help"
+            >
+              <mat-option *ngFor="let module of modules" [value]="module">
+                {{ module.label }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <small
+              id="permission-module-help"
+              class="form-text text-muted"
+            >
+            {{ 'Permissions.module.moduleHelp' | translate }}
+          </small>
+        </div>
+
+        <div class="modal-footer d-flex justify-content-between">
+          <button type="button" mat-stroked-button mat-dialog-close color="warn">
+            <mat-icon>cancel</mat-icon>
+            <span class="d-none d-sm-inline">{{ 'Cancel' | translate }}</span>
+          </button>
+
+          <button mat-stroked-button matStepperNext type="button">
+            <span class="d-none d-sm-inline">{{ 'Permissions.next' | translate }}</span>
+            <mat-icon>navigate_next</mat-icon>
+          </button>
+        </div>
+      </mat-step>
+
+      <mat-step formGroupName="actionsObjects" [stepControl]="formGroup?.controls.actionObjects">
+        <ng-template matStepLabel>{{ 'Permissions.actionObject.stepLabel' | translate }}</ng-template>
+
+        <div class="modal-body d-flex flex-column">
+          <mat-form-field class="w-100">
+            <mat-label>{{ 'Permissions.actionObject.label' | translate }}</mat-label>
+            <mat-select
+              formControlName="actionObject"
+              (selectionChange)="loadFilters($event.value)"
+              aria-describedby="permission-action-object-help"
+            >
+              <mat-option *ngFor="let actionObj of actionsOjects" [value]="actionObj">
+                {{ actionObj.label }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <small
+              id="permission-action-object-help"
+              class="form-text text-muted"
+            >
+            {{ 'Permissions.actionObject.actionObjectHelp' | translate }}
+          </small>
+        </div>
+
+        <div class="modal-footer d-flex justify-content-between">
+          <button mat-stroked-button matStepperPrevious type="button">
+            <mat-icon>navigate_before</mat-icon>
+            <span class="d-none d-sm-inline">{{ 'Permissions.previous' | translate }}</span>
+          </button>
+          <button type="button" mat-stroked-button mat-dialog-close color="warn">
+            <mat-icon>cancel</mat-icon>
+            <span class="d-none d-sm-inline">{{ 'Cancel' | translate }}</span>
+          </button>
+          <button mat-stroked-button matStepperNext type="button">
+            <span class="d-none d-sm-inline">{{ 'Permissions.next' | translate }}</span>
+            <mat-icon>navigate_next</mat-icon>
+          </button>
+        </div>
+      </mat-step>
+
+      <mat-step formGroupName="filters" [stepControl]="formGroup?.controls.filters">
+        <ng-template matStepLabel>{{ 'Permissions.filter.stepLabel' | translate }}</ng-template>
+
+        <div class="modal-body">
+          <ng-container
+           *ngIf="
+              availableFilters.length > 0
+              && formGroup.controls.filters.invalid
+              && (
+                formGroup.controls.filters.controls.scope.errors['required']
+                || formGroup.controls.filters.errors['atLeastOne']
+              )
+            "
+          >
+            <div class="bg-warning p-2 m-2 border rounded-lg d-flex flex-row">
+              <mat-icon inline>warning</mat-icon>
+              &nbsp;
+              <mat-error>
+                {{ 'Permissions.filter.atLeastOneFieldMsg' | translate }}
+              </mat-error>
+            </div>
+          </ng-container>
+
+          <!-- Available or not, force PROPERTY (=SCOPE) filter ! -->
+          <div class="form-group">
+            <mat-form-field [matTooltip]="'Permissions.filters.tooltips.SCOPE' | translate">
+              <mat-label>{{ 'Permissions.filters.types.SCOPE' | translate }}</mat-label>
+              <mat-select formControlName="scope">
+                <mat-option>-</mat-option>
+                <mat-option
+                  *ngFor="let filterVal of filtersValues?.SCOPE"
+                  [value]="filterVal.value"
+                >
+                  {{ filterVal.label }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <div class="form-group" *ngIf="availableFilters?.includes('GEOGRAPHIC')">
+            <pnx-areas
+              [searchBar]="true"
+              [parentFormControl]="formGroup.controls['filters'].controls['geographic']"
+              [label]="'Permissions.filters.types.GEOGRAPHIC' | translate"
+              [idTypes]="geographicFilterTypes"
+              [bindAllItem]="true"
+              [matTooltip]="'Permissions.filters.tooltips.GEOGRAPHIC' | translate"
+              matTooltipPosition="above"
+            >
+            </pnx-areas>
+          </div>
+
+          <div class="form-group" *ngIf="availableFilters?.includes('TAXONOMIC')">
+            <pnx-taxa
+              [parentFormControl]="formGroup.controls['filters'].controls['taxonomic']"
+              [label]="'Permissions.filters.types.TAXONOMIC' | translate"
+              [rank]="taxonomicFilterRank"
+              [bindAllItem]="true"
+              [matTooltip]="'Permissions.filters.tooltips.TAXONOMIC' | translate"
+              matTooltipPosition="above"
+            >
+            </pnx-taxa>
+          </div>
+
+          <div class="form-group" *ngIf="availableFilters?.includes('PRECISION')">
+              <mat-form-field [matTooltip]="'Permissions.filters.tooltips.PRECISION' | translate">
+                <mat-label>{{ 'Permissions.filters.types.PRECISION' | translate }}</mat-label>
+                <mat-select formControlName="precision">
+                  <mat-option>-</mat-option>
+                  <mat-option
+                    *ngFor="let filterVal of filtersValues?.PRECISION"
+                    [value]="filterVal.value"
+                  >
+                    {{ filterVal.label }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+          </div>
+        </div>
+
+        <div class="modal-footer d-flex justify-content-between">
+          <button mat-stroked-button matStepperPrevious type="button">
+            <mat-icon>navigate_before</mat-icon>
+            <span class="d-none d-sm-inline">{{ 'Permissions.previous' | translate }}</span>
+          </button>
+          <button type="button" mat-stroked-button mat-dialog-close color="warn">
+            <mat-icon>cancel</mat-icon>
+            <span class="d-none d-sm-inline">{{ 'Cancel' | translate }}</span>
+          </button>
+          <button mat-stroked-button matStepperNext type="button">
+            <span class="d-none d-sm-inline">{{ 'Permissions.next' | translate }}</span>
+            <mat-icon>navigate_next</mat-icon>
+          </button>
+        </div>
+      </mat-step>
+
+      <mat-step formGroupName="validating" [stepControl]="formGroup?.controls.validating">
+        <ng-template matStepLabel>{{ 'Permissions.validating.stepLabel' | translate }}</ng-template>
+
+        <div class="modal-body">
+          <div class="form-group">
+            <pnx-date
+              label="{{ 'Permissions.validating.endDateLabel' | translate }}"
+              [parentFormControl]="formGroup.controls.validating.controls.endDate"
+              [minDate]="datePickerMin"
+              [maxDate]="datePickerMax"
+              [matTooltip]="'Permissions.validating.endDateTooltip' | translate"
+              matTooltipPosition="above"
+              aria-describedby="permission-end-date-help"
+            >
+            </pnx-date>
+            <small
+              id="permission-end-date-help"
+              class="form-text text-muted"
+            >
+              {{ 'Permissions.validating.endDateHelp' | translate }}
+            </small>
+          </div>
+        </div>
+
+        <div class="modal-footer d-flex justify-content-between flex-wrap flex-sm-nowrap flex-row">
+          <button mat-stroked-button matStepperPrevious type="button">
+            <mat-icon>navigate_before</mat-icon>
+            {{ 'Permissions.previous' | translate }}
+          </button>
+
+          <button type="button" mat-stroked-button mat-dialog-close color="warn">
+            <mat-icon>cancel</mat-icon>
+            {{ 'Cancel' | translate }}
+          </button>
+
+          <button
+            type="button"
+            mat-stroked-button
+            color="warn"
+            (click)="formGroup.reset(); stepper.reset()"
+          >
+            <mat-icon>undo</mat-icon>
+            {{ 'Permissions.reset' | translate }}
+          </button>
+
+          <button
+            *ngIf="!updateMode.getValue() || (updateMode.getValue() && permission.isInherited)"
+            mat-raised-button
+            class="uppercase"
+            color="primary"
+            [disabled]="
+              !formGroup.valid ||
+              !formGroup.valid ||
+              disableSubmit
+            "
+            (click)="addPermission()"
+          >
+            <mat-icon>add</mat-icon>
+            {{ 'Create' | translate }}
+          </button>
+
+          <button
+            *ngIf="updateMode.getValue() && ! permission.isInherited"
+            mat-raised-button
+            class="uppercase"
+            color="primary"
+            [disabled]="
+              !formGroup.valid ||
+              !formGroup.valid ||
+              disableSubmit
+            "
+            (click)="updatePermission()"
+          >
+            <mat-icon>edit</mat-icon>
+            {{ 'Update' | translate }}
+          </button>
+        </div>
+      </mat-step>
+
+    </mat-horizontal-stepper>
+  </form>
+</div>

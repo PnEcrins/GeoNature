@@ -2,37 +2,54 @@
 Routes of the gn_permissions blueprint
 """
 
-import json
-from copy import copy
+import copy
+import locale
+import logging
 
-from flask import Blueprint, request, Response, render_template, session
+from flask import (
+    Blueprint,
+    request,
+    Response,
+    session,
+    jsonify
+)
+from utils_flask_sqla.response import json_resp
+
+from geonature.core.gn_commons.models import TModules
+from geonature.core.gn_permissions import decorators as permissions
+
+from geonature.core.gn_permissions.tools import cruved_scope_for_user_in_module
+from geonature.core.gn_permissions.repositories import PermissionRepository
 
 from geonature.utils.env import DB
-from utils_flask_sqla.response import json_resp
-from geonature.core.gn_commons.models import TModules
-from geonature.core.gn_permissions.models import TObjects, CorObjectModule
-from geonature.core.gn_permissions import decorators as permissions
-from geonature.core.gn_permissions.tools import cruved_scope_for_user_in_module
 
 
-routes = Blueprint("gn_permissions", __name__)
+# TODO : see how to define locale globaly => bug with python 3.7?
+print(f"Current locale: {locale.getlocale(locale.LC_TIME)}")
+locale.setlocale(locale.LC_TIME, "fr_FR.UTF-8")
 
+log = logging.getLogger(__name__)
+
+routes = Blueprint("gn_permissions", __name__, template_folder="templates")
+
+from .access_request.routes import *
+from .permissions.routes import *
 
 @routes.route("/cruved", methods=["GET"])
-@permissions.check_cruved_scope("R", True)
+@permissions.check_cruved_scope(action="R", get_role=True, module_code="GEONATURE")
 @json_resp
 def get_cruved(info_role):
     """
     Get the cruved for a user
 
     .. :quickref: Permissions;
-    
+
     Params:
     :param user: the user who ask the route, auto kwargs via @check_cruved_scope
     :type user: User
-    :param module_code: the code of the requested module - as querystring
+    :param module_code: the code of the requested module, or multiples codes comma separated - as querystring
     :type module_code: str
-    
+
     :returns: dict of the CRUVED
     """
     params = request.args.to_dict()
@@ -40,7 +57,8 @@ def get_cruved(info_role):
     # get modules
     q = DB.session.query(TModules)
     if "module_code" in params:
-        q = q.filter(TModules.module_code.in_(params["module_code"]))
+        codes = params["module_code"].split(',')
+        q = q.filter(TModules.module_code.in_(codes))
     modules = q.all()
 
     # for each modules get its cruved
@@ -49,12 +67,7 @@ def get_cruved(info_role):
     for mod in modules:
         mod_as_dict = mod.as_dict()
         # get mod objects
-        module_objects = (
-            DB.session.query(TObjects)
-            .join(CorObjectModule, CorObjectModule.id_object == TObjects.id_object)
-            .filter_by(id_module=mod_as_dict["id_module"])
-            .all()
-        )
+        module_objects = PermissionRepository().get_module_objects(mod_as_dict["id_module"])
 
         module_cruved, herited = cruved_scope_for_user_in_module(
             id_role=info_role.id_role, module_code=mod_as_dict["module_code"]
@@ -82,15 +95,51 @@ def get_cruved(info_role):
 
 @routes.route("/logout_cruved", methods=["GET"])
 def logout():
-    """	
-    Route to logout with cruved
-    
-    .. :quickref: Permissions;
-    
-    To avoid multiples server call, we store the cruved in the session	
-    when the user logout we need clear the session to get the new cruved session	
     """
-    copy_session_key = copy(session)
+    Route to logout with cruved
+
+    .. :quickref: Permissions;
+
+    To avoid multiples server call, we store the cruved in the session
+    when the user logout we need clear the session to get the new cruved session
+    """
+    copy_session_key = copy.copy(session)
     for key in copy_session_key:
         session.pop(key)
     return Response("Logout", 200)
+
+
+
+
+@routes.route("/modules", methods=["GET"])
+@permissions.check_cruved_scope(action="R", module_code="ADMIN", object_code="PERMISSIONS")
+def get_all_modules():
+    """
+    Retourne tous les modules.
+
+    .. :quickref: Permissions;
+
+    Params:
+    :param codes: filtre permetant de récupérer seulement les modules
+    pour un ou plusieurs codes données séparés par des virgules.
+
+    :returns: un tableau de dictionnaire contenant les infos des modules.
+    """
+    # Get params
+    params = request.args.to_dict()
+
+    query = DB.session.query(TModules)
+    if "codes" in params:
+        codes = params["codes"].split(',')
+        query = query.filter(TModules.module_code.in_(codes))
+
+    modules = []
+    for mdl in query.all():
+        modules.append(mdl.as_dict())
+
+    output = prepare_output(modules, remove_in_key="module")
+    return jsonify(output), 200
+
+
+
+

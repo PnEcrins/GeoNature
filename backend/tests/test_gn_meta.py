@@ -67,7 +67,7 @@ class TestGnMeta:
         assert (
             response.status_code == 200
             and len(dataset_list["data"]) == 1
-            and dataset_list["data"][0]["id_dataset"] == 1
+            and dataset_list["data"][0]["id_dataset"] == 3
         )
 
     # def test_mtd_interraction(self):
@@ -115,7 +115,7 @@ class TestGnMeta:
             "cor_dataset_actor": [
                 {
                     "id_cda": None,
-                    "id_nomenclature_actor_role": 358,
+                    "id_nomenclature_actor_role": 359,
                     "id_organism": 0,
                     "id_role": None,
                 }
@@ -127,8 +127,8 @@ class TestGnMeta:
             "id_dataset": 5,
             "id_nomenclature_collecting_method": 405,
             "id_nomenclature_data_type": 323,
-            "id_nomenclature_dataset_objectif": 407,
-            "id_nomenclature_resource_type": 320,
+            "id_nomenclature_dataset_objectif": 408,
+            "id_nomenclature_resource_type": 321,
             "id_nomenclature_source_status": 73,
             "keywords": None,
             "marine_domain": False,
@@ -155,7 +155,7 @@ class TestGnMeta:
             cor.pop("nomenclature_actor_role")
         # ajout d'un acteur
         fetched_dataset["cor_dataset_actor"].append(
-            {"id_cda": None, "id_nomenclature_actor_role": 358, "id_organism": 1, "id_role": None,}
+            {"id_cda": None, "id_nomenclature_actor_role": 359, "id_organism": 1, "id_role": None,}
         )
         # modification du nom
         fetched_dataset["dataset_name"] = "new_name"
@@ -180,16 +180,16 @@ class TestGnMeta:
             "cor_af_actor": [
                 {
                     "id_cafa": None,
-                    "id_nomenclature_actor_role": 358,
+                    "id_nomenclature_actor_role": 359,
                     "id_organism": 0,
                     "id_role": None,
                 }
             ],
-            "cor_objectifs": [515],
+            "cor_objectifs": [516],
             "cor_volets_sinp": [],
             "ecologic_or_geologic_target": "aaaa",
             "id_acquisition_framework": None,
-            "id_nomenclature_financing_type": 382,
+            "id_nomenclature_financing_type": 383,
             "id_nomenclature_territorial_level": 355,
             "is_parent": False,
             "keywords": "ttt",
