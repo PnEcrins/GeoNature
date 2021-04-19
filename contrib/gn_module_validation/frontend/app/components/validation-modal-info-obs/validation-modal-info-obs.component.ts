@@ -33,7 +33,7 @@ export class ValidationModalInfoObsComponent implements OnInit {
   @Input() uuidSynthese: any;
   @Output() modifiedStatus = new EventEmitter();
   @Output() valDate = new EventEmitter();
-
+ 
   constructor(
     public mapListService: MapListService,
     private _validatioDataService: ValidationDataService,
@@ -47,7 +47,7 @@ export class ValidationModalInfoObsComponent implements OnInit {
       comment: [""]
     });
   }
-
+ 
   ngOnInit() {
 
     // get all id_synthese of the filtered observations:
@@ -65,7 +65,7 @@ export class ValidationModalInfoObsComponent implements OnInit {
   setCurrentCdNomenclature(item) {
     this.currentCdNomenclature = item.cd_nomenclature;
   }
-
+ 
   getStatusNames() {
     this._validatioDataService.getStatusNames().subscribe(
       result => {
@@ -116,7 +116,7 @@ export class ValidationModalInfoObsComponent implements OnInit {
   closeModal() {
     this.activeModal.close();
   }
-
+ 
   backToModule(url_source, id_pk_source) {
     const link = document.createElement("a");
     link.target = "_blank";
@@ -124,7 +124,7 @@ export class ValidationModalInfoObsComponent implements OnInit {
     link.setAttribute("visibility", "hidden");
     link.click();
   }
-
+ 
   onSubmit(value) {
     // post validation status form ('statusForm') for the current observation
     return this._validatioDataService
@@ -172,7 +172,7 @@ export class ValidationModalInfoObsComponent implements OnInit {
         //console.log(data);
       });
   }
-
+ 
   update_status() {
     // send valstatus value to validation-synthese-list component
     this.modifiedStatus.emit({
@@ -180,12 +180,12 @@ export class ValidationModalInfoObsComponent implements OnInit {
       new_status: this.currentCdNomenclature
     });
   }
-
+ 
   cancel() {
     this.statusForm.reset();
     this.edit = false;
   }
-
+ 
   getValidationDate(uuid) {
     this._validatioDataService.getValidationDate(uuid).subscribe(
       result => {

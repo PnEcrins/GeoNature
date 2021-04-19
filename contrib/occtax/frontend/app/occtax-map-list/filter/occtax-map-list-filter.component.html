@@ -16,14 +16,17 @@
     </div>
     <ng-template #elseBlock>
       <pnx-observers 
+        class="auto"
         label="{{ 'Releve.Observers' | translate }}"
         [parentFormControl]="occtaxMapListService.dynamicFormGroup.controls.observers" 
+        [multiSelect]="true"
         [idMenu]="occtaxConfig.id_observers_list">
       </pnx-observers>
     </ng-template>
   </div>
   <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 padding-sm">
     <pnx-datasets 
+      class="auto"
       label="{{ 'Releve.Dataset' | translate }}" 
       [displayAll]="true" 
       [displayOnlyActive]="false"

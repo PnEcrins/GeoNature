@@ -115,11 +115,6 @@ export class AfFormComponent implements OnInit {
       this._formService.checkFormValidity(element);
     });
 
-    // format objectifs
-    af.cor_objectifs = af.cor_objectifs.map(obj => obj.id_nomenclature);
-    // format volets
-    af.cor_volets_sinp = af.cor_volets_sinp.map(obj => obj.id_nomenclature);
-
     if (this._formService.formValid) {
       af.acquisition_framework_start_date = this._dateParser.format(
         af.acquisition_framework_start_date

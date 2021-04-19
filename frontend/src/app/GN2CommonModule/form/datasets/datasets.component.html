@@ -1,37 +1,23 @@
-<div *ngIf="multiSelect; else elseBlock">
-  <pnx-multiselect
-    [values]="dataSets"
-    [parentFormControl]="parentFormControl"
-    keyLabel="dataset_name"
-    keyValue="id_dataset"
-    [label]="label"
-    debounceTime="500"
-    [searchBar]="searchBar"
-    [disabled]="disabled"
-    [displayAll]="displayAll"
-    [bindAllItem]="bindAllItem"
-    (onSearch)="filterItems($event)"
+<small> {{label }} </small>
+<ng-select 
+  [ngClass]="class"
+	[items]="dataSets | async"
+	bindLabel="dataset_name"
+	bindValue="id_dataset"
+	placeholder="Jeux de données"
+	[multiple]="multiSelect"
+	[clearable]="clearable"
+	[virtualScroll]="true"
+	[formControl]="parentFormControl"
+>
+	<ng-template 
+    ng-option-tmp 
+    let-item="item" 
+    let-index="index" 
+    let-search="searchTerm"
   >
-  </pnx-multiselect>
-</div>
-
-<ng-template #elseBlock>
-  <small> {{ label }} </small>
-  <div class="input-group">
-    <select
-      class="form-control form-control-sm"
-      id="dataset-form "
-      [formControl]="parentFormControl"
-      [disableControl]="disabled"
-    >
-      <option
-        *ngIf="displayAll"
-        [ngValue]="null"
-      > Tous </option>
-      <option
-        *ngFor="let dataSet of dataSets"
-        [ngValue]="dataSet.id_dataset"
-      >{{ dataSet.dataset_name }}</option>
-    </select>
-  </div>
-</ng-template>
+    <div matTooltip="{{item.dataset_name}}">
+      <span class="pre-wrap">{{item.dataset_name}}</span>
+    </div>
+  </ng-template>
+</ng-select>

@@ -175,6 +175,7 @@
 
     <ng-container *ngIf="AppConfig.SYNTHESE.SEARCH_OBSERVER_WITH_LIST; else observersTxtBlock">
       <pnx-observers
+        [multiSelect]="true"
         [parentFormControl]="formService.searchForm.get('observers_list')"
         [idMenu]="AppConfig.SYNTHESE.ID_SEARCH_OBSERVER_LIST"
         [label]="'Releve.Observers' | translate"

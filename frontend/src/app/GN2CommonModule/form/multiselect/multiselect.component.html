@@ -1,85 +1,23 @@
 <small> {{label }} </small>
-<div class="input-group">
-  <div
-    class="dropdown-toggle btn-white full-width clickable"
-    #buttonInput
-    data-toggle="dropdown"
-    tabindex="0"
-    aria-expanded="true"
-    [ngClass]="{'disabled': disabled, 'custom-invalid' : parentFormControl.invalid && !disabled}"
-    (focus)="onFocus($event)"
-    (blur)="onBlur($event)"
-    (click)="onButtonInputClick($event)"
-    style="white-space: normal;"
-    id="button-input"
+<ng-select 
+  [ngClass]="class"
+  [items]="values"
+  [bindLabel]="keyLabel"
+  [bindValue]="keyValue"
+  [placeholder]="placeholder"
+  [multiple]="true"
+  [clearable]="clearable"
+  [virtualScroll]="true"
+  [formControl]="parentFormControl"
+>
+  <ng-template 
+    ng-option-tmp 
+    let-item="item" 
+    let-index="index" 
+    let-search="searchTerm"
   >
-    <span
-      *ngFor="let item of selectedItems"
-      class="filter-option input-value pull-left"
-    >
-
-      <span
-        *ngIf="isHtml; else selectedNotHtml"
-        [innerHtml]="item[keyLabel] | safeHTML"
-      ></span>
-      <ng-template #selectedNotHtml>
-        <span class="li-label">
-          {{ item[keyLabel] }}
-        </span>
-      </ng-template>
-
-      <span
-        (click)="removeItem($event, item)"
-        class="fa fa-times clickable remove-button"
-      > </span>
-    </span>
-
-    &nbsp;
-    <span class="caret caret-input"></span>
-  </div>
-  <div class="dropdown-menu full-width select-data">
-    <div *ngIf="searchBar" class="search-box">
-      <input
-        #searchInput
-        class="form-control"
-        type="text"
-        placeholder="{{'Search' | translate}}"
-        [formControl]="searchControl"
-        autocomplete="off"
-        id="search-input"
-        (focus)="onSearchInputFocus()"
-        (blur)="onSearchInputBlur()"
-      >
+    <div matTooltip="{{item[keyLabel]}}">
+      <span class="pre-wrap">{{item[keyLabel]}}</span>
     </div>
-    <ul>
-      <li
-        *ngIf="displayAll"
-        (click)="addItem('all')"
-        class="clickable li-dropdown li-label padded-multiline"
-        #dropdownItem
-      >
-        {{'AllItems' | translate}}
-      </li>
-      <li
-        *ngFor="let val of values"
-        tabindex="0"
-        (focus)="setValSave(val)"
-        (blur)="setValSave()"
-        (click)="addItem(val)"
-        class="clickable li-dropdown padded-multiline"
-        #dropdownItem
-      >
-        <span
-          *ngIf="isHtml; else itemNotHtml"
-          class="li-label"
-          [innerHtml]="val[keyLabel] | safeHTML"
-        ></span>
-        <ng-template #itemNotHtml>
-          <span class="li-label">
-            {{ val[keyLabel] }}
-          </span>
-        </ng-template>
-      </li>
-    </ul>
-  </div>
-</div>
+  </ng-template>
+</ng-select>

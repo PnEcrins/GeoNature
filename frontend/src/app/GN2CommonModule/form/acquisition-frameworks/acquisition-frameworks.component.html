@@ -1,38 +1,23 @@
-<div *ngIf="multiSelect; else elseBlock">
-  <pnx-multiselect
-    [values]="values"
-    [parentFormControl]="parentFormControl"
-    keyLabel="acquisition_framework_name"
-    keyValue="id_acquisition_framework"
-    [label]="label"
-    debounceTime="500"
-    [searchBar]="searchBar"
-    [disabled]="disabled"
-    [displayAll]="displayAll"
-    [bindAllItem]="bindAllItem"
-    (onSearch)="filterItems($event)"
+<small> {{label }} </small>
+<ng-select 
+  [ngClass]="class"
+  [items]="acquisitionFrameworks | async"
+  bindLabel="acquisition_framework_name"
+  bindValue="id_acquisition_framework"
+  [placeholder]="label"
+  [multiple]="multiSelect"
+  [clearable]="clearable"
+  [virtualScroll]="true"
+  [formControl]="parentFormControl"
+>
+  <ng-template 
+    ng-option-tmp 
+    let-item="item" 
+    let-index="index" 
+    let-search="searchTerm"
   >
-  </pnx-multiselect>
-</div>
-
-<ng-template #elseBlock>
-  <small> {{ label }} </small>
-  <div class="input-group">
-    <select
-      [ngClass]="{'is-invalid' : parentFormControl.invalid}"
-      class="form-control form-control-sm"
-      id="dataset-form "
-      [formControl]="parentFormControl"
-      [disableControl]="disabled"
-    >
-      <option
-        *ngIf="displayAll"
-        [ngValue]="null"
-      > Tous </option>
-      <option
-        *ngFor="let af of values"
-        [ngValue]="af.id_acquisition_framework"
-      >{{ af.acquisition_framework_name }}</option>
-    </select>
-  </div>
-</ng-template>
+    <div matTooltip="{{item.acquisition_framework_name}}">
+      <span class="pre-wrap">{{item.acquisition_framework_name}}</span>
+    </div>
+  </ng-template>
+</ng-select>

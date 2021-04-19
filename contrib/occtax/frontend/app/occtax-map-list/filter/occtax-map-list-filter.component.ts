@@ -51,7 +51,7 @@ export class OcctaxMapListFilterComponent implements OnInit {
         params.push({ param: key, value: value });
       } else if (key === "observers" && value) {
         this.occtaxMapListService.dynamicFormGroup.value.observers.forEach(observer => {
-          params.push({ param: "observers", value: observer });
+          params.push({ param: "observers", value: observer.id_role });
         });
       } else if (value && value !== "") {
         params.push({ param: key, value: value });

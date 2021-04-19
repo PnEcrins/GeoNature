@@ -9,6 +9,8 @@ import {
   Output,
   EventEmitter
 } from '@angular/core';
+import { Observable, BehaviorSubject } from 'rxjs';
+import { map, tap } from 'rxjs/operators';
 import { DataFormService } from '../data-form.service';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
@@ -41,12 +43,12 @@ import { GenericFormComponent } from '@geonature_common/form/genericForm.compone
 })
 export class NomenclatureComponent extends GenericFormComponent
   implements OnInit, OnChanges, OnDestroy {
-  public labels: Array<any>;
+  public labels: Observable<Array<any>>;
   public labelLang: string;
   public definitionLang: string;
   public subscription: Subscription;
   public valueSubscription: Subscription;
-  public currentCdNomenclature = 'null';
+  public _currentCdNomenclature: Array<any> = null;
   public currentIdNomenclature: number;
   public savedLabels;
   /**
@@ -67,7 +69,7 @@ export class NomenclatureComponent extends GenericFormComponent
    * Valeur possible: n'importequel attribut de l'objet ``nomenclature`` renvoyé par l'API
    */
   @Input() keyValue;
-  @Input() bindAllItem: false;
+  @Input() bindAllItem: boolean = false;
   @Output() labelsLoaded = new EventEmitter<Array<any>>();
 
   constructor(private _dfService: DataFormService, private _translate: TranslateService) {
@@ -89,30 +91,24 @@ export class NomenclatureComponent extends GenericFormComponent
     // set cdNomenclature
     this.valueSubscription = this.parentFormControl.valueChanges.subscribe(id => {
       this.currentIdNomenclature = id;
-      const self = this;
-      if (this.labels) {
-        this.labels.forEach(label => {
-          if (this.currentIdNomenclature === label.id_nomenclature) {
-            self.currentCdNomenclature = label.cd_nomenclature;
-          }
-        });
-      }
     });
   }
 
-  getCdNomenclature() {
-    let cdNomenclature;
-    if (this.labels) {
-      this.labels.forEach(label => {
-        if (this.currentIdNomenclature === label.id_nomenclature) {
-          cdNomenclature = label.cd_nomenclature;
-        }
-      });
-      return cdNomenclature;
+  get currentCdNomenclature(): string {
+    for (var i = 0; i < this._currentCdNomenclature.length; i++) {
+      if (this.currentIdNomenclature === this._currentCdNomenclature[i]['id_nomenclature']) {
+        return this._currentCdNomenclature[i]['cd_nomenclature'];
+      }
     }
+    return null;
+  }
+
+  getCdNomenclature():string {
+    return this.currentCdNomenclature;
   }
 
   ngOnChanges(changes: SimpleChanges) {
+    super.ngOnChanges(changes);
     // if change regne => change groupe2inpn also
     if (changes.regne !== undefined && !changes.regne.firstChange) {
       this.initLabels();
@@ -129,26 +125,24 @@ export class NomenclatureComponent extends GenericFormComponent
 
   initLabels() {
     const filters = { orderby: 'label_default' };
-    this._dfService
-      .getNomenclature(this.codeNomenclatureType, this.regne, this.group2Inpn, filters)
-      .subscribe(data => {
-        this.labels = data.values;
-        this.savedLabels = data.values;
-        this.labelsLoaded.emit(this.labels);
-      });
+    this.labels = this._dfService
+                      .getNomenclature(this.codeNomenclatureType, this.regne, this.group2Inpn, filters)
+                      .pipe(
+                        map(data => {
+                          this._currentCdNomenclature = data.values;
+                          this.labelsLoaded.emit(data.values);
+                          return data.values;
+                        }),
+                        tap(() => {
+                          if (this.multiSelect && Array.isArray(this.parentFormControl.value)) {
+                            this.parentFormControl.setValue(this.parentFormControl.value.map(val=>val.id_nomenclature));
+                          }
+                        })
+                      );
   }
 
   ngOnDestroy() {
     this.subscription.unsubscribe();
     this.valueSubscription.unsubscribe();
-  }
-
-  filterItems(event) {
-    if (this.searchBar && event) {
-      this.labels = this.savedLabels.filter(el => {
-        const isIn = el.label_default.toUpperCase().indexOf(event.toUpperCase());
-        return isIn !== -1;
-      });
-    }
   }
 }

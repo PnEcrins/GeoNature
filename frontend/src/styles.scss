@@ -1,3 +1,4 @@
+@import "~@ng-select/ng-select/themes/default.theme.css";
 @import 'conf/names_variables.scss';
 @import 'custom/custom.scss';
 
@@ -407,7 +408,7 @@ li.no-bullet {
   float: right;
 }
 
-// SPINER OVERLAY
+
 
 #cover-spin {
   position: fixed;
@@ -453,4 +454,44 @@ li.no-bullet {
   border-radius: 50%;
   -webkit-animation: spin 0.8s linear infinite;
   animation: spin 0.8s linear infinite;
+}
+
+
+// NG-SELECT
+.ng-select .ng-dropdown-panel {
+  z-index: 3001;
+}
+.ng-select.sm,
+.ng-select.sm .ng-select-container,
+.ng-select.auto,
+.ng-select.auto .ng-select-container {
+  min-height: 0px;
+}
+.ng-select.sm .ng-select-container { height: 24px; }
+.ng-select.auto .ng-select-container { height: calc(1.5em + .5rem); }
+.ng-select.sm.ng-select-multiple .ng-select-container,         
+.ng-select.auto.ng-select-multiple .ng-select-container {            
+    height: auto;
+}
+.ng-select.sm .ng-option,
+.ng-select.auto .ng-option {
+  font-size: 12px;
+}
+.ng-select.sm .ng-placeholder,
+.ng-select.auto .ng-placeholder {
+  font-size: 12px;
+  top: initial!important;
+}
+.ng-select.sm .ng-value,
+.ng-select.auto .ng-value {
+  font-size: 12px;
+}
+.ng-select.sm.ng-select-single .ng-select-container .ng-value-container .ng-input,
+.ng-select.auto.ng-select-single .ng-select-container .ng-value-container .ng-input {
+  top: 50%;
+  transform: translateY(-50%);
+}
+.ng-select.sm .ng-input input,
+.ng-select.auto .ng-input input {
+  font-size: 13px;
 }

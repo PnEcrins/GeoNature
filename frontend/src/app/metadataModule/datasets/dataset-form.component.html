@@ -16,19 +16,27 @@
 
 
           <small>Cadre d'acquisition </small>
-          <div class="input-group">
-            <select
-              class="form-control form-control-sm"
-              [formControl]="datasetForm.controls.id_acquisition_framework"
+          <ng-select 
+            class="auto"
+            [items]="acquisitionFrameworks | async"
+            bindLabel="acquisition_framework_name"
+            bindValue="id_acquisition_framework"
+            [disabled]="disabled"
+            placeholder="Cadres d'acquisition"
+            [virtualScroll]="true"
+            [formControl]="datasetForm.get('id_acquisition_framework')"
+          >
+            <ng-template 
+              ng-option-tmp 
+              let-item="item" 
+              let-index="index" 
+              let-search="searchTerm"
             >
-              <option
-                *ngFor="let ac of acquisitionFrameworks"
-                [ngValue]="ac.id_acquisition_framework"
-              >
-                {{ac.acquisition_framework_name}}
-              </option>
-            </select>
-          </div>
+              <div matTooltip="{{item.acquisition_framework_name}}">
+                <span class="pre-wrap">{{item.acquisition_framework_name}}</span>
+              </div>
+            </ng-template>
+          </ng-select>
 
           <small>Nom du JDD </small>
           <div class="form-group">

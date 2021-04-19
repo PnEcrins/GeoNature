@@ -151,10 +151,11 @@
 
     <pnx-observers
       *ngIf="!occtaxConfig.observers_txt; else elseBlock"
-      [parentFormControl]="releveParamForm.get('observers')"
+      [parentFormControl]="releveParamForm.get('observers')" 
       [idMenu]="occtaxConfig.id_observers_list"
-      label="{{ 'Releve.Observers' | translate }}"
+      label="{{ 'Releve.Observers' | translate }}" 
       [bindAllItem]="true"
+      [multiSelect]="true"
     >
     </pnx-observers>
     <ng-template #elseBlock>

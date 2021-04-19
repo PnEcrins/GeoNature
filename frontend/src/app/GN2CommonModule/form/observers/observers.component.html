@@ -1,13 +1,23 @@
-<pnx-multiselect
-  [values]="filteredObservers"
-  [parentFormControl]="parentFormControl"
-  [keyLabel]="'nom_complet'"
-  keyValue="id_role"
-  [label]="label"
-  debounceTime="500"
-  (onSearch)="filterObservers($event)"
-  [disabled]="disabled"
-  [bindAllItem]="bindAllItem"
-  [searchBar]="searchBar"
+<small> {{label }} </small>
+<ng-select 
+  [ngClass]="class"
+	[items]="observers | async"
+	bindLabel="nom_complet"
+	[bindValue]="bindValue"
+	[multiple]="multiSelect"
+	[clearable]="clearable"
+	placeholder="Observateur(s)"
+	[virtualScroll]="true"
+	[formControl]="parentFormControl"
 >
-</pnx-multiselect>
+	<ng-template 
+    ng-option-tmp 
+    let-item="item" 
+    let-index="index" 
+    let-search="searchTerm"
+  >
+    <div matTooltip="{{item.nom_complet}}">
+      <span class="pre-wrap">{{item.nom_complet}}</span>
+    </div>
+  </ng-template>
+</ng-select>

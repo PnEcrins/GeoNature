@@ -2,34 +2,51 @@ import { Component, OnInit, Input } from '@angular/core';
 import { DataFormService } from '../data-form.service';
 import { FormControl } from '@angular/forms';
 import { CommonService } from '@geonature_common/service/common.service';
+import { GenericFormComponent } from '@geonature_common/form/genericForm.component';
 import { AppConfig } from '@geonature_config/app.config';
+import { Subject, Observable, of, concat } from 'rxjs';
+import { distinctUntilChanged, debounceTime, switchMap, tap, catchError, map } from 'rxjs/operators'
 
 @Component({
   selector: 'pnx-areas',
   templateUrl: 'areas.component.html'
 })
-export class AreasComponent implements OnInit {
-  public areas: any;
+export class AreasComponent extends GenericFormComponent implements OnInit {
   public cachedAreas: any;
   @Input() idTypes: Array<number>; // Areas id_type
-  /** Désactive le composant. */
-  @Input() disabled: boolean = false;
-  @Input() label: string;
-  @Input() searchBar = false;
-  @Input() parentFormControl: FormControl;
-  @Input() bindAllItem: false;
-  @Input() debounceTime: number;
+
+  areas_input$ = new Subject<string>();
+  areas: Observable<any>;
+  loading = false;
 
   constructor(
-    private _dfs: DataFormService,
-    private _commonService: CommonService,
-  ) {}
+    private _dfs: DataFormService, 
+    private _commonService: CommonService
+  ) {
+    super();
+  }
 
   ngOnInit() {
-    this._dfs.getAreas(this.idTypes).subscribe(data => {
-      this.cachedAreas = data;
-      this.formatAreas(data);
-    });
+    this.getAreas();
+  }
+
+  getAreas() { 
+    this.areas = concat(
+        this._dfs.getAreas(this.idTypes).pipe(map(data=>this.formatAreas(data))), // default items
+        this.areas_input$.pipe(
+            debounceTime(200),
+            distinctUntilChanged(),
+            tap(() => this.loading = true),
+            switchMap(term => {
+              return term.length >= 2 ?
+                this._dfs.getAreas(this.idTypes, term).pipe(
+                  map(data=>this.formatAreas(data)),
+                  catchError(() => of([])), // empty list on error
+                  tap(() => this.loading = false)
+                ) : [];
+            }) 
+        )
+    );
   }
 
   /**
@@ -38,34 +55,12 @@ export class AreasComponent implements OnInit {
    */
   formatAreas(data) {
     if (data.length > 0 && data[0]['id_type'] === AppConfig.BDD.id_area_type_municipality) {
-      this.areas = data.map(element => {
+      return data.map(element => {
         element['area_name'] = `${element['area_name']} (${element.area_code.substr(0, 2)}) `;
         return element;
       });
-    } else {
-      this.areas = data;
-    }
-  }
+    } 
 
-  refreshAreas(area_name) {
-    // refresh area API call only when area_name >= 2 character
-    if (area_name && area_name.length >= 2) {
-      this._dfs.getAreas(this.idTypes, area_name).subscribe(
-        data => {
-          this.formatAreas(data);
-        },
-        err => {
-          if (err.status === 404) {
-            this.areas = [{ area_name: 'No data to display' }];
-          } else {
-            this.areas = [];
-            this._commonService.translateToaster('error', 'ErrorMessage');
-          }
-        }
-      );
-      // and reset areas when delete search or select a area
-    } else if (!area_name) {
-      this.areas = this.cachedAreas;
-    }
+    return data;
   }
 }

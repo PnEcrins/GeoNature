@@ -4,11 +4,20 @@
   <!-- Organismes -->
   <small> Organisme </small>
   <div class="input-group">
-    <select class="form-control form-control-sm" [disableControl]="disabled" [formControl]="form.controls.id_organism">
-        <option [ngValue]="null"></option>
-      <option *ngFor="let org of organisms" [ngValue]="org.id_organisme" >
-        {{org.nom_organisme}} </option>
-    </select>
+    <ng-select 
+        class="auto"
+        style="width:80%"
+        [items]="organisms | async"
+        bindLabel="nom_organisme"
+        bindValue="id_organisme"
+        [disabled]="disabled"
+        placeholder="Organismes"
+        [virtualScroll]="true"
+        [formControl]="form.get('id_organism')">
+      <ng-template ng-option-tmp let-item="item" let-index="index" let-search="searchTerm">
+            <div matTooltip="{{item.nom_organisme}}"><span class="pre-wrap">{{item.nom_organisme}}</span></div>
+        </ng-template>
+    </ng-select>
     <button type="button" class="btn btn-outline-shadow btn-sm" data-toggle="collapse"
     [attr.data-target]="'#collapse'+i">
     <i class="fa fa-cog" aria-hidden="true"></i>
@@ -18,16 +27,26 @@
   <div class="collapse" [attr.id]="'collapse'+i">
     <small> Un jeu de données ou un cadre d'acquisition peut être rattaché à un organisme  <b> et/ou </b> à une personne </small>
     <small> Personne </small>
-    <div class="input-group">
-      <select class="form-control form-control-sm" [disableControl]="disabled" [formControl]="form.controls.id_role">
-        <option [ngValue]="null"></option>
-        <option *ngFor="let role of roles" [ngValue]="role.id_role">
-          {{role.nom_complet}} </option>
-      </select>
-    </div>
+    <ng-select 
+        class="auto"
+        [items]="roles | async"
+        bindLabel="nom_complet"
+        bindValue="id_role"
+        [disabled]="disabled"
+        placeholder="Roles"
+        [virtualScroll]="true"
+        [formControl]="form.get('id_role')">
+      <ng-template ng-option-tmp let-item="item" let-index="index" let-search="searchTerm">
+            <div matTooltip="{{item.nom_complet}}"><span class="pre-wrap">{{item.nom_complet}}</span></div>
+        </ng-template>
+    </ng-select>
   </div>
 
-  <pnx-nomenclature label="Type de role" [parentFormControl]="form.controls.id_nomenclature_actor_role" codeNomenclatureType="ROLE_ACTEUR">
+  <pnx-nomenclature 
+      class="auto"
+      label="Type de role" 
+      [parentFormControl]="form.get('id_nomenclature_actor_role')" 
+      codeNomenclatureType="ROLE_ACTEUR">
   </pnx-nomenclature>
 
   <button *ngIf="i != 0"

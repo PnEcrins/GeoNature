@@ -1,13 +1,26 @@
-<pnx-multiselect
-  [disabled]="disabled"
-  [values]="areas"
-  [parentFormControl]="parentFormControl"
-  keyLabel="area_name"
-  keyValue="id_area"
-  [label]="label"
-  debounceTime="500"
-  (onSearch)="refreshAreas($event)"
-  [searchBar]="searchBar"
-  [bindAllItem]="bindAllItem"
+<small> {{ label }} </small>
+<ng-select 
+	[ngClass]="class"
+	[items]="areas | async"
+	bindLabel="area_name"
+	bindValue="id_area"
+	[placeholder]="label"
+	[multiple]="true"
+	[clearable]="clearable"
+	[virtualScroll]="true"
+	[typeahead]="areas_input$"
+	[loading]="loading"
+	[formControl]="parentFormControl"
 >
-</pnx-multiselect>
+	<ng-template 
+		ng-option-tmp 
+		let-item="item" 
+		let-index="index" 
+		let-search="searchTerm"
+	>
+    <div matTooltip="{{item.area_name}}">
+    	<span class="pre-wrap">{{item.area_name}}</span>
+    </div>
+  </ng-template>
+</ng-select>
+
