@@ -176,4 +176,5 @@ class GnModuleSchemaConf(Schema):
     ENABLE_SETTINGS_TOOLS = fields.Boolean(missing=False)
     ENABLE_MEDIAS = fields.Boolean(missing=True)
     ENABLE_MY_PLACES = fields.Boolean(missing=True)
+    DEFAULT_DATASET_ID = fields.Integer(missing=None)
     DISPLAY_VERNACULAR_NAME = fields.Boolean(missing=True)

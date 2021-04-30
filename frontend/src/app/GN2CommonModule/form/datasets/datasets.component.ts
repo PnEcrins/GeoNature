@@ -55,6 +55,10 @@ export class DatasetsComponent extends GenericFormComponent implements OnInit, O
    * code du module pour n'afficher que les JDD associés au module
    */
   @Input() moduleCode: string;
+  /*
+   * JDD sélectionné par défaut
+  */
+  @Input() defaultDatasetId: number = null;
 
   constructor(
     private _dfs: DataFormService,
@@ -86,6 +90,7 @@ export class DatasetsComponent extends GenericFormComponent implements OnInit, O
         if (res['with_mtd_errors']) {
           this._commonService.translateToaster('error', 'MetaData.JddErrorMTD');
         }
+        if (this.defaultDatasetId && this.dataSets.some(e => e.id_dataset == this.defaultDatasetId ) ){ this.parentFormControl.setValue(this.defaultDatasetId); }
       },
       error => {
         if (error.status === 500) {

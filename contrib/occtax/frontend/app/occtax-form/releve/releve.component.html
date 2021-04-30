@@ -80,6 +80,7 @@
         [disabled]="propertiesForm.disabled"
         (valueLoaded)="userDatasets = $event.value"
         moduleCode="OCCTAX"
+        [defaultDatasetId]="occtaxConfig.DEFAULT_DATASET_ID"
       >
       </pnx-datasets>
     </ng-template>
