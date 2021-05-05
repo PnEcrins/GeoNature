@@ -850,7 +850,7 @@ def get_observation_count():
 
 @routes.route("/observations_bbox", methods=["GET"])
 @json_resp
-def get_bbox():
+def get_bbox(id_dataset=None):
     """
     Get bbbox of observations
 
@@ -868,9 +868,12 @@ def get_bbox():
     params = request.args
 
     query = DB.session.query(func.ST_AsGeoJSON(func.ST_Extent(Synthese.the_geom_4326)))
-        
-    if "id_dataset" in params:
-        query = query.filter(Synthese.id_dataset == params["id_dataset"])
+    
+    if not id_dataset and "id_dataset" in params:
+        id_dataset = params["id_dataset"]
+
+    if id_dataset:
+        query = query.filter(Synthese.id_dataset == id_dataset)
     data = query.one()
     if data and data[0]:
         return json.loads(data[0])
@@ -898,19 +901,20 @@ def observation_count_per_column(column):
         data.append(temp)
     return data
 
-
-@routes.route("/taxa_distribution", methods=["GET"])
 @json_resp
-def get_taxa_distribution():
+def taxa_distribution(id_dataset=None, id_af=None, rank=None):
     """
     Get taxa distribution for a given dataset or acquisition framework
     and grouped by a certain taxa rank
     """
 
-    id_dataset = request.args.get("id_dataset")
-    id_af = request.args.get("id_af")
+    if not id_dataset:
+        id_dataset = request.args.get("id_dataset")
+    if not id_af:
+        id_af = request.args.get("id_af")
 
-    rank = request.args.get("taxa_rank")
+    if not rank:
+        rank = request.args.get("taxa_rank")
     if not rank:
         rank = "regne"
 
@@ -934,6 +938,15 @@ def get_taxa_distribution():
 
     data = query.group_by(rank).all()
     return [{"count": d[0], "group": d[1]} for d in data]
+
+@routes.route("/taxa_distribution", methods=["GET"])
+@json_resp
+def get_taxa_distribution():
+    """
+    Get taxa distribution for a given dataset or acquisition framework
+    and grouped by a certain taxa rank
+    """
+    return taxa_distribution()
 
 
 # @routes.route("/test", methods=["GET"])

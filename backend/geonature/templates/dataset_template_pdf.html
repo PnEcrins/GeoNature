@@ -190,28 +190,30 @@
           </p>
         </div>
         {% endif %}
-
-      </div>
-
       {% endif %}
-
+      </div>
 
       <div
         class="right-block"
         style="display:grid"
       >
-        <!-- <div class="zone">
-                    <p class="zone-geographique">Zone géographique</p>
-                    <div class="map"></div>
-                </div> -->
-        <!-- A modifier lorsque la carte sera prete -->
+        {% if data['map']: %}
+        <div class="zone">
+          <p class="zone-geographique">Zone géographique</p>
+          <img
+            class="taxons"
+            src="data:image/jpeg;base64,{{ data['map'] | safe }}"
+            alt="Pas d'observations à afficher."
+          >
+        </div>
+        {% endif %}
 
         {% if data['chart']: %}
         <div class="repartition">
           <p class="repartition-especes">Répartition des espèces</p>
           <img
             class="taxons"
-            src="{{url_for('static', filename='images/taxa.png')}}"
+            src="data:image/jpeg;base64,{{ data['chart'] | safe }}"
             alt="Pas d'espèces à afficher."
           >
         </div>

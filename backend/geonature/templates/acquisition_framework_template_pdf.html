@@ -222,7 +222,115 @@
                     </p>
                 </div>
 
-                {% if data.cor_af_actor: %}
+                {% if not (data.cor_af_actor and data.cor_af_actor[5]) : %}
+                <div class="information">
+                    <p class="info-titre">Acteurs</p>
+                    <p class="info-contenu">
+                        {% if data.cor_af_actor: %}
+                        {% for act in data.cor_af_actor -%}
+                        {% if act.nomenclature_actor_role: %}
+                        {{ act.nomenclature_actor_role['mnemonique'] }} :
+                        {% endif %}
+                        {% if act.organism: %}
+                        {{ act.organism['nom_organisme'] }}
+                        {% endif %}
+                        {% if act.organism and act.role: %}
+                        -
+                        {% endif %}
+                        {% if act.role: %}
+                        {{ act.role['nom_complet'] }}
+                        {% endif %}
+                        <br>
+                        {%- endfor %}
+                        {% endif %}
+                    </p>
+                </div>
+
+                {% if data['keywords']: %}
+                <div class="information">
+                    <p class="info-titre">Mots-clés</p>
+                    <p class="info-contenu">
+                        {{ data['keywords'] }}
+                    </p>
+                </div>
+                {% endif %}
+                {% endif %}
+
+            </div>
+            <div class="right-block">
+
+                {% if data['map']: %}
+                <div class="zone">
+                    <p class="zone-geographique">Zone géographique</p>
+                    <img
+                        class="taxons"
+                        src="data:image/jpeg;base64,{{ data['map'] | safe }}"
+                        alt="Pas d'espèces à afficher."
+                    >
+                </div>
+                {% endif %}
+
+                {% if data['chart']: %}
+                <div class="repartition">
+                    <p class="repartition-especes">Répartition des espèces</p>
+                    <img
+                        class="taxons"
+                        src="data:image/jpeg;base64,{{ data['chart'] | safe }}"
+                        alt="Pas d'espèces à afficher."
+                    >
+                </div>
+                {% endif %}
+
+                {% if not (data.datasets and data.datasets[3]) : %}
+                <div class="jdd">
+                    <hr
+                        class="ligne-jeux-donnees ligne"
+                        {% if data.css: %}
+                        id="ligne-jeux-donnees-{{data.css['entite']}}"
+                        {% else %}
+                        id="ligne-jeux-donnees-defaut"
+                        {% endif %}
+                    >
+                    <p class="liste-jdd">Liste des jeux de données associés au cadre</p>
+                    {% if data.datasets: %}
+                    {% for dataset in data.datasets -%}
+                    <div class="jdd-details">
+                        <img
+                            class="logo-jdd"
+                            src="{{url_for('static', filename='images/Taxon_icon_vert.svg')}}"
+                            alt="taxon-vert-icon"
+                        >
+                        <p class="jdd-info">
+                            {% if dataset['unique_dataset_id']: %}
+                            {{ dataset['unique_dataset_id'] }}
+                            {% endif %}
+                            <br>
+                            {% if dataset['dataset_name']: %}
+                            {{ dataset['dataset_name'] }}
+                            {% endif %}
+                        </p>
+                    </div>
+                    {%- endfor %}
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="footer">
+            <a
+                target="_blank"
+                href="{{data.footer['url']}}"
+            >{{data.footer['url']}}</a>
+            <span>{{data.footer['date']}}</span>
+        </div>
+
+        {% if (data.cor_af_actor and data.cor_af_actor[5]) or (data.datasets and data.datasets[3]) : %}
+        <br />
+        <div class="description" style="transform: translateY(40px);">
+            {% if data.cor_af_actor and data.cor_af_actor[5] : %}
+            <div class="left-block">
+                <br>
                 <div class="information">
                     <p class="info-titre">Acteurs</p>
                     <p class="info-contenu">
@@ -243,7 +351,6 @@
                         {%- endfor %}
                     </p>
                 </div>
-                {% endif %}
 
                 {% if data['keywords']: %}
                 <div class="information">
@@ -253,27 +360,15 @@
                     </p>
                 </div>
                 {% endif %}
-
             </div>
+            {% endif %}
+
+            {% if data.datasets and data.datasets[3] : %}
+            {% if not(data.cor_af_actor and data.cor_af_actor[5]) : %}
+            <div class="left-block" style="border: none;">
+            </div>
+            {% endif %}
             <div class="right-block">
-
-                <!-- <div class="zone">
-                <p class="zone-geographique">Zone géographique</p>
-            </div> -->
-                <!-- A modifier lorsque la carte sera prete -->
-
-                {% if data['chart']: %}
-                <div class="repartition">
-                    <p class="repartition-especes">Répartition des espèces</p>
-                    <img
-                        class="taxons"
-                        src="{{url_for('static', filename='images/taxa.svg')}}"
-                        alt="Pas d'espèces à afficher."
-                    >
-                </div>
-                {% endif %}
-
-                {% if data.datasets: %}
                 <div class="jdd">
                     <hr
                         class="ligne-jeux-donnees ligne"
@@ -284,6 +379,7 @@
                         {% endif %}
                     >
                     <p class="liste-jdd">Liste des jeux de données associés au cadre</p>
+                    {% if data.datasets: %}
                     {% for dataset in data.datasets -%}
                     <div class="jdd-details">
                         <img
@@ -302,17 +398,12 @@
                         </p>
                     </div>
                     {%- endfor %}
+                    {% endif %}
                 </div>
-                {% endif %}
             </div>
-
-            <div class="footer">
-                <a
-                    target="_blank"
-                    href="{{data.footer['url']}}"
-                >{{data.footer['url']}}</a>
-                <span>{{data.footer['date']}}</span>
-            </div>
+            {% endif %}
+        </div>
+        {% endif %}
     </body>
 
 </html>

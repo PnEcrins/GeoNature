@@ -430,9 +430,6 @@ export class DataFormService {
     );
   }
 
-  uploadCanvas(img: any) {
-    return this._http.post<any>(`${AppConfig.API_ENDPOINT}/meta/upload_canvas`, img);
-  }
   getTaxaDistribution(taxa_rank, params?: ParamsDict) {
     let queryString = new HttpParams();
     queryString = queryString.set('taxa_rank', taxa_rank);

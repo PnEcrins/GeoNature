@@ -1,7 +1,10 @@
 """
     Routes for gn_meta 
 """
+import os
+import base64
 import datetime as dt
+import io
 import json
 import logging
 
@@ -29,6 +32,10 @@ from geonature.core.gn_synthese.models import (
     TSources,
     CorAreaSynthese,
     CorSensitivitySynthese,
+)
+from geonature.core.gn_synthese.routes import (
+    taxa_distribution,
+    get_bbox
 )
 from geonature.core.ref_geo.models import LAreas
 
@@ -315,21 +322,110 @@ def get_dataset_details(info_role, id_dataset):
 
     return get_dataset_details_dict(id_dataset, info_role)
 
-
-@routes.route("/upload_canvas", methods=["POST"])
-@json_resp
-def upload_canvas():
-    """Upload the canvas as a temporary image used while generating the pdf file
+def decode_bytesio(b):
+    """ Return the decoded value of a map/chart image saved in a BytesIO
     """
-    data = request.data[22:]
-    filepath = str(BACKEND_DIR) + "/static/images/taxa.png"
-    fm.remove_file(filepath)
-    if data:
-        binary_data = a2b_base64(data)
-        fd = open(filepath, "wb")
-        fd.write(binary_data)
-        fd.close()
-    return "OK"
+    base = base64.b64encode(b.getvalue())
+    decoded = base.decode('ascii')
+    return decoded
+
+def create_taxa_chart(id_dataset=None, id_af=None):
+    """Create a png chart of the taxonomic distribution using the matplotlib library
+    """
+    import matplotlib.pyplot as plt
+    import numpy as np
+
+    if (id_dataset):
+        response = taxa_distribution(id_dataset=id_dataset, rank="group2_inpn")
+    elif (id_af):
+        response = taxa_distribution(id_af=id_af, rank="group2_inpn")
+        
+    distribution = json.loads(response.data)
+    try:
+        if distribution['message'] == "not found":
+            return
+    except TypeError:
+        pass
+
+    count = []
+    group = []
+    for taxa in distribution:
+        count.append(taxa['count'])
+        group.append(taxa['group'])
+
+    def func(pct, allvals):
+        absolute = int(pct/100.*np.sum(allvals))
+        return "{:.1f}%\n({:d})".format(pct, absolute)
+
+    fig, ax = plt.subplots(figsize=(6, 3.5), subplot_kw=dict(aspect="equal"))
+
+    wedges, texts, autotexts = ax.pie(count,
+        autopct=lambda pct: func(pct, count),
+        wedgeprops=dict(width=0.65),
+        startangle=-40,
+        radius=1.5,
+        pctdistance=0.75)
+
+    bbox_props = dict(boxstyle="square,pad=0.3", fc="w", ec="k", lw=0.72)
+    kw = dict(arrowprops=dict(arrowstyle="-"),
+            bbox=bbox_props, zorder=0, va="center")
+
+    ax.legend(wedges, group,
+          loc="center left",
+          bbox_to_anchor=(0, 0.5),
+          bbox_transform=plt.gcf().transFigure,
+          fontsize="x-large")
+
+    plt.setp(autotexts, size='x-large')
+    plt.tight_layout()
+    plt.subplots_adjust(left=0.35)
+
+    b = io.BytesIO()
+    plt.savefig(b, format='png')
+    return decode_bytesio(b)
+
+
+def create_taxa_map(id_dataset=None, bbox=None):
+    """ Create a svg map of the taxonomic repartition using the staticmaps libary
+    """
+    import staticmaps
+
+    if not bbox:
+        response = get_bbox(id_dataset=id_dataset)
+        bbox = json.loads(response.data)
+        try:
+            if bbox['message'] == "not found":
+                return
+        except KeyError:
+            pass
+
+    if bbox['coordinates']:
+        context = staticmaps.Context()
+        context.set_tile_provider(staticmaps.tile_provider_OSM)
+        
+        if bbox['type'] == 'Point':
+            bbox_coordinates = staticmaps.create_latlng(bbox['coordinates'][1], bbox['coordinates'][0])
+            context.add_object(staticmaps.Marker(bbox_coordinates, color=staticmaps.BLUE, size=12))
+            
+        elif bbox['type'] == 'Polygon':
+            bbox_coordinates = []
+            for coordinates in bbox['coordinates'][0]:
+                reversed = coordinates.copy()
+                reversed.reverse()
+                bbox_coordinates.append(reversed)
+            context.add_object(
+                staticmaps.Area(
+                    [staticmaps.create_latlng(lat, lng) for lat, lng in bbox_coordinates],
+                    fill_color=staticmaps.parse_color("#87CEFA3F"),
+                    width=2,
+                    color=staticmaps.BLUE,
+                )
+            )
+
+        b = io.BytesIO()
+        image = context.render_cairo(800, 500)
+        image.write_to_png(b)
+        return decode_bytesio(b)
 
 
 @routes.route("/dataset/<int:ds_id>", methods=["DELETE"])
@@ -726,14 +822,14 @@ def get_export_pdf_dataset(id_dataset, info_role):
         df["dataset_shortname"].replace(" ", "_"),
         dt.datetime.now().strftime("%d%m%Y_%H%M%S"),
     )
+    
+    chart = create_taxa_chart(id_dataset=id_dataset)
+    if chart:
+        df["chart"] = chart
 
-    try:
-        f = open(str(BACKEND_DIR) + "/static/images/taxa.png")
-        f.close()
-        df["chart"] = True
-    except IOError:
-        df["chart"] = False
-
+    map = create_taxa_map(id_dataset=id_dataset)
+    if map:
+        df["map"] = map
 
     # Appel de la methode pour generer un pdf
     pdf_file = fm.generate_pdf("dataset_template_pdf.html", df, filename)
@@ -771,7 +867,15 @@ def get_export_pdf_acquisition_frameworks(id_acquisition_framework, info_role):
     data = q.filter(TDatasets.id_acquisition_framework == id_acquisition_framework).all()
     dataset_ids = [d.id_dataset for d in data]
     acquisition_framework["datasets"] = [d.as_dict(True) for d in data]
-
+    geojsonData = (
+        DB.session.query(func.ST_AsGeoJSON(func.ST_Extent(Synthese.the_geom_4326)))
+        .filter(Synthese.id_dataset.in_(dataset_ids))
+        .first()[0]
+    )
+    if geojsonData:
+        acquisition_framework["bbox"] = json.loads(geojsonData)
+    else:
+        acquisition_framework["bbox"] = None
     nb_data = len(dataset_ids)
     nb_taxons = (
         DB.session.query(Synthese.cd_nom)
@@ -867,12 +971,21 @@ def get_export_pdf_acquisition_frameworks(id_acquisition_framework, info_role):
             dt.datetime.now().strftime("%d%m%Y_%H%M%S"),
         )
 
+    chart = create_taxa_chart(id_af=id_acquisition_framework)
+    if chart:
+        acquisition_framework["chart"] = chart
+
+    if acquisition_framework["bbox"]:
+        map = create_taxa_map(bbox=acquisition_framework["bbox"])
+        if map:
+            acquisition_framework["map"] = map
 
     # Appel de la methode pour generer un pdf
     pdf_file = fm.generate_pdf(
         "acquisition_framework_template_pdf.html", acquisition_framework, filename
     )
     pdf_file_posix = Path(pdf_file)
+
     return send_from_directory(str(pdf_file_posix.parent), pdf_file_posix.name, as_attachment=True)
 
 
