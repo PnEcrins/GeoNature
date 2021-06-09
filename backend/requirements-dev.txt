@@ -57,7 +57,6 @@ sphinxcontrib-httpdomain==1.7.0
 sphinxcontrib-websupport==1.0.1
 traitlets==4.3.2
 typed-ast==1.4.0
-typing==3.6.2
 virtualenv-clone==0.5.4
 virtualenv==20.0.31
 wcwidth==0.1.7
