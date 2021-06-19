@@ -4,6 +4,7 @@ import { OcchabStoreService } from "../../services/store.service";
 import { DataFormService } from "@geonature_common/form/data-form.service";
 import { OccHabDataService } from "../../services/data.service";
 import { leafletDrawOption } from "@geonature_common/map/leaflet-draw.options";
+import { geomanDrawOption } from "@geonature_common/map/geoman-draw.options";
 import { MapService } from "@geonature_common/map/map.service";
 import { ActivatedRoute, Router } from "@angular/router";
 import { Subscription } from "rxjs/Subscription";
@@ -11,6 +12,7 @@ import { CommonService } from "@geonature_common/service/common.service";
 import { AppConfig } from "@geonature_config/app.config";
 import { ModuleConfig } from "../../module.config";
 import { filter } from "rxjs/operators";
+import { L } from "leaflet";
 @Component({
   selector: "pnx-occhab-form",
   templateUrl: "occhab-form.component.html",
@@ -19,6 +21,7 @@ import { filter } from "rxjs/operators";
 })
 export class OccHabFormComponent implements OnInit {
   public leafletDrawOptions = leafletDrawOption;
+  public geomanDrawOptions = geomanDrawOption;
   public filteredHab: any;
   private _sub: Subscription;
   public editionMode = false;
@@ -37,6 +40,9 @@ export class OccHabFormComponent implements OnInit {
   public currentEditingStation: any;
   // boolean tocheck if the station has at least one hab (control the validity of the form)
   public atLeastOneHab = false;
+  public datasets: Array<any>;
+  public currentStations: Array<any>;
+  public stationsgeoJson: L.geoJSON;
 
   constructor(
     public occHabForm: OcchabFormService,
@@ -50,10 +56,17 @@ export class OccHabFormComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    // Récupère les datasets compatibles avec OccHab
+    this._gnDataService.getDatasets({ 'module_code': 'OCCHAB' }).subscribe(data => {
+      this.datasets = data.data;
+    })
     this.leafletDrawOptions;
-    leafletDrawOption.draw.polyline = false;
-    leafletDrawOption.draw.circle = false;
-    leafletDrawOption.draw.rectangle = false;
+    this.geomanDrawOptions;
+    geomanDrawOption.draw.drawPolyline = false;
+    geomanDrawOption.draw.drawCircle = true;
+    geomanDrawOption.draw.drawRectangle = false;
+
+    this.currentStations = [];
 
     this.occHabForm.stationForm = this.occHabForm.initStationForm();
     this.occHabForm.stationForm.controls.geom_4326.valueChanges.subscribe(d => {
@@ -89,6 +102,51 @@ export class OccHabFormComponent implements OnInit {
           });
       }
     });
+  }
+
+  fetchDatasetStations(datasetId, event) {
+    this._occHabDataService.getStations(
+      { 'id_dataset': datasetId }
+    ).subscribe(geojsonStations => {
+      if (event.checked) {
+        // If checkbox checked, we add to related data to the currentStations list
+        this.currentStations.push({ IdDB: datasetId, Data: geojsonStations });
+      } else {
+        // If the checkbox is unchecked, we find the related data in the currentStations list and we remove it
+        var indexDataset = this.currentStations.findIndex(dict => dict.IdDB == datasetId);
+        this.currentStations.splice(indexDataset, 1);
+      }
+
+      // We start a new featureCollection that will contain all the selected features
+      var featureCollection = {
+        type: 'FeatureCollection',
+        features: []
+      };
+      // We add all the features contained in the currentStations list, in the featureCollection
+      this.currentStations.forEach(function (feature) {
+        featureCollection.features.push(feature.Data);
+      });
+
+      // We display the features on the map
+      this.setDatasetOnLayers(datasetId, featureCollection);
+    })
+  }
+
+  setDatasetOnLayers(datasetId, stations) {
+    // const stationsLayerGroup = this._mapService.L.geoJSON(this.geojsonStations$.getValue());
+    if (this.stationsgeoJson) {
+      this._mapService.map.removeLayer(this.stationsgeoJson);
+    }
+
+    this.stationsgeoJson = this._mapService.L.geoJSON(stations, {
+      pointToLayer: (feature, latlng) => {
+        return this._mapService.L.circleMarker(latlng)
+      }
+    });
+
+    //this._mapService.layerControl.addOverlay(stationsLayerGroup, datasetId);
+    this.stationsgeoJson.addTo(this._mapService.map);
+
   }
 
   formIsDisable() {

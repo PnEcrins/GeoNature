@@ -1,10 +1,12 @@
 import { Component, OnInit, Input, Output, EventEmitter, OnChanges } from '@angular/core';
 import { Map } from 'leaflet';
+import '@geoman-io/leaflet-geoman-free';
 
 import { MapService } from '../map.service';
 import { AppConfig } from '@geonature_config/app.config';
 import { CommonService } from '../../service/common.service';
 import { leafletDrawOption } from '@geonature_common/map/leaflet-draw.options';
+import { geomanDrawOption } from '@geonature_common/map/geoman-draw.options';
 import { GeoJSON } from 'togeojson';
 
 import 'leaflet-draw';
@@ -48,7 +50,7 @@ export class LeafletDrawComponent implements OnInit, OnChanges {
    * Voir `exemple
    * <https://github.com/PnX-SI/GeoNature/blob/develop/frontend/src/modules/occtax/occtax-map-form/occtax-map-form.component.ts#L27>`_
    */
-  @Input() options = leafletDrawOption;
+  @Input() options = geomanDrawOption;
   @Input() zoomLevel = AppConfig.MAPCONFIG.ZOOM_LEVEL_RELEVE;
   /** Niveau de zoom à partir du quel on peut dessiner sur la carte */
   @Output() layerDrawed = new EventEmitter<GeoJSON>();
@@ -63,15 +65,85 @@ export class LeafletDrawComponent implements OnInit, OnChanges {
   }
 
   enableLeafletDraw() {
-    this.options.edit['featureGroup'] = this.drawnItems;
-    this.options.edit['featureGroup'] = this.mapservice.leafletDrawFeatureGroup;
-    this.drawControl = new this._Le.Control.Draw(this.options);
-    this.map.addControl(this.drawControl);
+    //this.options.edit['featureGroup'] = this.drawnItems;
+    //this.options.edit['featureGroup'] = this.mapservice.leafletDrawFeatureGroup;
+    //this.drawControl = new this._Le.Control.Draw(this.options);
+
+    //this.map.addControl(this.drawControl);
+    this.map.pm.addControls(this.options.draw);
 
     if (!this.bEnable) {
       this.disableDrawControl();
     }
 
+    // Geoman triggers
+    this.map.on("pm:globaldrawmodetoggled", e => {
+      // Redraw the geometrical layers when the Polygon tool is toggled
+      // to avoid opacity incompatibilities with Geoman tools
+      if (e['shape'] == "Polygon") {
+        this.map.eachLayer((layer) => {
+          if(layer['feature']) {
+            layer.remove();
+            layer.addTo(this.map);
+          }
+        });
+      }
+    });
+
+    this.map.on('pm:drawstart', e => {
+      this.mapservice.removeAllLayers(this.map, this.mapservice.fileLayerFeatureGroup);
+      if (this.map.getZoom() < this.zoomLevel) {
+        this._commonService.translateToaster('warning', 'Map.ZoomWarning');
+      }
+      // remove eventual filelayer layers
+      if (this.mapservice.fileLayerFeatureGroup) {
+        // delete only if fileLayerEditionMode = false
+        // if true we let the filelayer layer to draw it
+        if (!this.mapservice.fileLayerEditionMode) {
+          this.mapservice.removeAllLayers(this.map, this.mapservice.fileLayerFeatureGroup);
+        }
+      }
+      // remove the current draw
+      if (this._currentDraw !== null) {
+        this.mapservice.removeAllLayers(this.map, this.mapservice.leafletDrawFeatureGroup);
+      }
+      // remove the current marker
+      const markerLegend = document.getElementById('markerLegend');
+      if (markerLegend) {
+        markerLegend.style.backgroundColor = 'white';
+      }
+      this.mapservice.editingMarker = false;
+      //this.map.off('click');
+      if (this.mapservice.marker) {
+        this.map.removeLayer(this.mapservice.marker);
+      }
+    })
+
+    this.map.on("pm:create", e => {
+      if (this.map.getZoom() < this.zoomLevel) {
+        this._commonService.translateToaster('warning', 'Map.ZoomWarning');
+        this.layerDrawed.emit({ geojson: null });
+      } else {
+        this.mapservice.removeAllLayers(this.map, this.mapservice.leafletDrawFeatureGroup);
+        this.mapservice.removeAllLayers(this.map, this.mapservice.fileLayerFeatureGroup);
+        this.map.pm.disableDraw('Marker');
+        this._currentDraw = (e as any).layer;
+        if ((e as any).shape !== 'Marker') {
+          this._currentDraw = this._currentDraw.setStyle(this.mapservice.searchStyle);
+        }
+        this.currentLayerType = (e as any).shape;
+        this.mapservice.leafletDrawFeatureGroup.addLayer(this._currentDraw);
+        const geojson = this.getGeojsonFromFeatureGroup(this.currentLayerType);
+        // set firLayerFromMap = false because we just draw a layer
+        // the boolean change MUST be before the output fire (emit)
+        this.mapservice.firstLayerFromMap = false;
+
+        this.mapservice.setGeojsonCoord(geojson);
+        this.layerDrawed.emit(geojson);
+      }
+    });
+
+    // Leaflet triggers
     this.map.on(this._Le.Draw.Event.DRAWSTART, e => {
       this.mapservice.removeAllLayers(this.map, this.mapservice.fileLayerFeatureGroup);
       if (this.map.getZoom() < this.zoomLevel) {
@@ -150,7 +222,8 @@ export class LeafletDrawComponent implements OnInit, OnChanges {
     let geojson: any = this.mapservice.leafletDrawFeatureGroup.toGeoJSON();
     geojson = geojson.features[0];
 
-    if (layerType === 'circle') {
+    //if (layerType === 'circle') {
+    if (layerType === 'Circle') {
       const radius = this._currentDraw.getRadius();
       geojson.properties.radius = radius;
     }

@@ -59,22 +59,32 @@
 
       </div>
     </div>
+    <div class="dropup">
+      <div class="dropup-content">
+        <p *ngFor="let dataset of datasets" class="dataset-items">
+          <input type="checkbox" name="stations" [id]="dataset.id_dataset"
+            (click)="fetchDatasetStations(dataset.id_dataset, $event.target)">
+          {{dataset.dataset_name}}
+        </p>
+      </div>
+      <button class="dropbtn"><i class="fa fa-bars picto" aria-hidden="true"> </i> Datasets</button>
+    </div>
     <!--END  HABITAT ALREADY SAVED -->
     <pnx-map [height]="mapHeight">
       <!-- <pnx-occhab-dataset-map-overlay
           (getBoundingBox)="loadDatasetGeom($event)"
         >
         </pnx-occhab-dataset-map-overlay> -->
-      <pnx-marker
+      <!--<pnx-marker
         [coordinates]="markerCoordinates"
         zoomLevel="5"
         [defaultEnable]="false"
         (markerChanged)="occHabForm.patchGeoValue($event)"
       >
-      </pnx-marker>
+      </pnx-marker>-->
       <pnx-leaflet-draw
         [geojson]="currentGeoJsonFileLayer"
-        [options]="leafletDrawOptions"
+        [options]="geomanDrawOptions"
         zoomLevel="5"
         (layerDrawed)="occHabForm.patchGeoValue($event)"
       >

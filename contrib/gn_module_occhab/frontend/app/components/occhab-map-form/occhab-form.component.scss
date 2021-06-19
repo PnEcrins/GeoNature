@@ -106,3 +106,51 @@ tbody {
 pnx-autocomplete {
   width: 100%;
 }
+
+.dropbtn {
+  background-color: #f9f9f9;
+  border: 2px solid rgba(0,0,0,0.2);
+  border-radius: 10px;
+  padding: 16px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.dropup {
+  position: absolute;
+  z-index: 17000;
+  right: 10px;
+  bottom: 10px;
+  display: inline-block;
+}
+
+.dropup-content {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  border: 2px solid rgba(0,0,0,0.2);
+  border-radius: 10px;
+  right: 0;
+  padding: 10px;
+  min-width: 160px;
+  max-width: 300px;
+  min-height: 60px;
+  bottom: 0px;
+  z-index: 1;
+}
+
+.dropup-content p {
+  margin-bottom: 0;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.dropup:hover .dropup-content {
+  display: flex;
+  justify-content: space-evenly;
+  flex-direction: column;
+}
+
+.dataset-items {
+  width: 100%;
+}

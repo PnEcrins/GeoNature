@@ -2,6 +2,7 @@ import { Component, OnInit, AfterViewInit, OnDestroy } from "@angular/core";
 import { Subscription } from "rxjs";
 import { filter, map, distinctUntilChanged } from "rxjs/operators";
 import { leafletDrawOption } from "@geonature_common/map/leaflet-draw.options";
+import { geomanDrawOption } from "@geonature_common/map/geoman-draw.options";
 import { CommonService } from "@geonature_common/service/common.service";
 import { ModuleConfig } from "../../module.config";
 import { MapService } from '@geonature_common/map/map.service';
@@ -14,6 +15,7 @@ import { OcctaxFormService } from "../occtax-form.service";
 })
 export class OcctaxFormMapComponent implements OnInit, AfterViewInit, OnDestroy {
   public leafletDrawOptions: any;
+  public geomanDrawOptions: any;
   public firstFileLayerMessage = true;
   public occtaxConfig = ModuleConfig;
   private _subscriptions: Subscription[] = [];
@@ -38,6 +40,8 @@ export class OcctaxFormMapComponent implements OnInit, AfterViewInit, OnDestroy 
     leafletDrawOption.draw.polyline = true;
     leafletDrawOption.edit.remove = false;
     this.leafletDrawOptions = leafletDrawOption;
+    geomanDrawOption.draw.drawPolyline = true;
+    this.geomanDrawOptions = geomanDrawOption;
     // set the input for the marker component
     // set the coord only when load data and when its edition mode (id_releve)
     // after the marker component does it by itself whith the ouput
